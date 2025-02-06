@@ -1,0 +1,73 @@
+Product Backlog for Roepilot - University Student Tech Support
+
+📌 Features & User Stories
+
+1️⃣ User Registration & Authentication
+
+[Feature] User registration and login with university email or student ID.
+
+[User Story] As a new learner, I want to register with my university email address or student ID, so that I can log in with confirmed credentials.
+
+[User Story] As a student, I want to log in securely via multi-factor authentication, so that I can protect my academic and private information.
+
+[User Story] As a student, I want to reset my password if I forget it, so that I can regain access to my account easily.
+
+2️⃣ Requesting Tech Support
+
+[Feature] Students can submit technical support requests.
+
+[User Story] As a student, I want to submit a technical issue request (e.g., software installation, account access), so that I can receive assistance from the support team.
+
+[User Story] As a student, I want to categorize my request (e.g., software, hardware, network), so that the appropriate support team can assist me.
+
+[User Story] As a student, I want to track the status of my request (e.g., in-progress, resolved, pending), so that I know when my issue will be resolved.
+
+3️⃣ Providing Technical Assistance
+
+[Feature] Support team members can manage and resolve student queries.
+
+[User Story] As a support team member, I want to view new support queries, so that I can prioritize and address student issues efficiently.
+
+[User Story] As a support team member, I want to communicate directly with students to diagnose and resolve technical issues, so that they can continue their studies without interruption.
+
+[User Story] As a support team member, I want to update the request status (e.g., resolved, closed), so that students stay informed about the progress of their issues.
+
+4️⃣ Knowledge Base and FAQs
+
+[Feature] A knowledge base for common technical issues.
+
+[User Story] As a learner, I want access to a knowledge base of common technical problems and solutions, so that I can troubleshoot issues independently.
+
+[User Story] As a learner, I want to search a FAQ section for quick fixes, so that I can resolve simple technical problems without waiting for support.
+
+5️⃣ Live Chat & Communication
+
+[Feature] Real-time chat with technical support.
+
+[User Story] As a student, I want to start a real-time chat with the support team, so that I can get immediate help with urgent issues.
+
+[User Story] As a student, I want to attach screenshots or files in the chat, so that I can provide clearer context for my issue.
+
+6️⃣ Ticket System & Prioritization
+
+[Feature] A ticketing system with prioritization.
+
+[User Story] As a student, I want my technical support request to be prioritized based on urgency (e.g., critical, high, low), so that critical issues are addressed first.
+
+[User Story] As a student, I want an estimated resolution timeframe for my request, so that I can plan my work accordingly.
+
+7️⃣ User Rating & Feedback
+
+[Feature] A feedback and rating system for tech support services.
+
+[User Story] As a student, I want to rate the level of support I receive, so that I can provide feedback for service improvement.
+
+[User Story] As a support team member, I want to receive feedback on my assistance, so that I can improve my responses and service quality.
+
+8️⃣ Admin Panel & Analytics
+
+[Feature] An admin dashboard with analytics.
+
+[User Story] As an administrator, I want to monitor and analyze the number of support queries, common issues, and response times, so that I can identify trends and improve efficiency.
+
+[User Story] As an administrator, I want to allocate support requests to specific team members, so that the workload is distributed evenly.
