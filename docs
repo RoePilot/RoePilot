@@ -1,46 +1,46 @@
 Product Backlog for RoePilot – University Student Peer-to-Peer Tech Support
 Features & User Stories
 
-1)	User Registration & Authentication
+(1)	User Registration & Authentication
 [Feature] Secure registration and login for Roehampton students.
 [User Story] As a student, I would like to register using my university email so that I can ensure only registered students utilize the platform.
  [User Story] As a student, I want to log in securely with multi-factor authentication, so that my account and personal details are secure.
  [User Story] As a student, I want to be able to reset my password if I forget it, so that I can easily get back into my account.
 
-2)	 Posting Technical Questions (Peer-to-Peer Knowledge Exchange)
+(2)	 Posting Technical Questions (Peer-to-Peer Knowledge Exchange)
 [Feature] Students can submit and categorize technical questions for peer assistance.
  [User Story] I would like to post technical questions in the community as a student, so that my fellow students can help me debug my issue.
  [User Story] As a student, I want to categorize my question (e.g., software, hardware, networking) so that it’s more convenient for others to search and respond to it.
  [User Story] As a student, I would like to monitor the status of my question (e.g., open, answered, requires more information), so that I can keep track of it and know once a solution is reached.
 
-3)	 Answering Questions (Community Support & Collaboration)
+(3)	 Answering Questions (Community Support & Collaboration)
 [Feature] Students can view and respond to technical questions.
  [User Story] As a student, I would like to see unanswered questions, so that I can share my knowledge and assist my fellow students.
  [User Story] As a student, I want to be able to work in discussion threads, so that I can interactively debug and improve solutions to problems.
  [User Story] I want to mark a question as answered when a satisfactory response is posted, so that others know the issue has been resolved.
 
-4)	 Knowledge Base & FAQs (Self-Help & Learning)
+(4)	 Knowledge Base & FAQs (Self-Help & Learning)
 [Feature] A searchable knowledge base of common technical issues.
  [User Story] As a student, I should be able to view a knowledge base of frequent technical problems and their resolutions so that I can troubleshoot myself.
  [User Story] As a student, I would appreciate it if the FAQ section had a search functionality, so I could quickly find solutions without needing to create a new question.
 
-5)	 Real-Time Collaboration (Live Chat & File Sharing)
+(5)	 Real-Time Collaboration (Live Chat & File Sharing)
 [Feature] Students can engage in real-time discussions to debug issues.
  [User Story] I would like to create a live discussion thread for complex issues as a student, so that multiple people can brainstorm together to figure them out.
  [User Story] I want to be able to share logs or screenshots in the chat as a student, so that other students can understand and diagnose my issue more effectively.
  [User Story] I want to tag other individuals in discussions as a student, so that the experts can address my problem right away.
 
-6)	Community-Driven Prioritization (Urgency-Based Sorting)
+(6)	Community-Driven Prioritization (Urgency-Based Sorting)
 [Feature] Upvote system to bring important or pressing questions to prominence.
  [User Story] I want my question to be upvoted by others if it's urgent, so that it gets more visibility and quicker answers.
  [User Story] I would like to see an estimated response time based on similar past questions, so I can know when to expect a solution.
 
-7)	 Feedback & Reputation System (Promoting Collaboration & Quality Answers)
+(7)	 Feedback & Reputation System (Promoting Collaboration & Quality Answers)
 [Feature] Users can rate answers, and credibility can be built up from contributions.
  [User Story] I would like to rate and upvote answers as a student, so that the best answers appear first.
 
  [User Story] I would like to get reputation points for helping others as a student, so that my efforts get recognized.  [User Story] As a student, I would like to receive constructive feedback on my answers, so that I can improve my technical problem-solving abilities.
-8)	 Admin Panel & Community Insights
+(8)	 Admin Panel & Community Insights
  [Feature] Admin dashboard to monitor community engagement and content quality. 
 [User Story] As an admin, I want to know which students have the most solutions, so that we can recognize and encourage active members. 
 [User Story] I want to track trending technical issues as an admin, so that popular issues can be resolved proactively by the community. 
