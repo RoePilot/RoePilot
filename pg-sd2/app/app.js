@@ -25,50 +25,24 @@ app.get("/db_test", function(req, res) {
     });
 });
 
-// NEW ROUTE: Create a route for /db_test/:id
-app.get("/db_test/:id", function(req, res) {
-    const id = req.params.id;
-    console.log(`Requested URL: ${req.url}`);
-    console.log(`ID: ${id}`);
-
-    const sql = 'SELECT * FROM test_table WHERE id = ?';
-    db.query(sql, [id])
-        .then(results => {
-            console.log(results);
-            if (results.length > 0) {
-                const name = results[0].name;
-                const htmlResponse = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Database Test</title>
-                    </head>
-                    <body>
-                        <h1>Database Test</h1>
-                        <p>The name for ID <strong>${id}</strong> is: <strong>${name}</strong>.</p>
-                    </body>
-                    </html>
-                `;
-                res.send(htmlResponse);
-            } else {
-                res.status(404).send("No record found for ID " + id);
-            }
-        })
-        .catch(error => {
-            console.error('Error executing query:', error);
-            res.status(500).send('An error occurred while querying the database.');
-        });
+// Create a route for /goodbye
+// Responds to a 'GET' request
+app.get("/goodbye", function(req, res) {
+    res.send("Goodbye world!");
 });
 
-// NEW ROUTE: Create a route for "/hello/:name"
+// Create a dynamic route for /hello/<name>, where name is any value provided by user
+// At the end of the URL
+// Responds to a 'GET' request
 app.get("/hello/:name", function(req, res) {
-    const name = req.params.name;
-    res.send(`Hello, ${name}!`);
+    // req.params contains any parameters in the request
+    // We can examine it in the console for debugging purposes
+    console.log(req.params);
+    //  Retrieve the 'name' parameter and use it in a dynamically generated page
+    res.send("Hello " + req.params.name);
 });
 
 // Start server on port 3000
-app.listen(3000, function() {
+app.listen(3000,function(){
     console.log(`Server running at http://127.0.0.1:3000/`);
 });
