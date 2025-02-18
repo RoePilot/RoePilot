@@ -1,74 +1,79 @@
-// Import express.js
 const express = require("express");
+const db = require("./services/db");
 
-// Create express app
-var app = express();
-
-// Add static files location
+const app = express();
 app.use(express.static("static"));
 
-// Get the functions in the db.js file to use
-const db = require('./services/db');
-
-// Create a route for root - /
+// EXERCISE 1: Modify root route to display "Hello [Your Name]"
 app.get("/", function(req, res) {
-    res.send("Hello world!");
+    res.send("Hello [Your Name]!");
 });
 
-// Create a route for testing the db
-app.get("/db_test", function(req, res) {
-    // Assumes a table called test_table exists in your database
-    sql = 'select * from test_table';
-    db.query(sql).then(results => {
-        console.log(results);
-        res.send(results)
+// EXERCISE 2: Create a new route '/roehampton'
+app.get("/roehampton", function(req, res) {
+    console.log(req.url);
+    res.send("Hello Roehampton!");
+});
+
+// EXERCISE 4: Add logic to return first 3 letters of request path
+app.get("/roehampton", function(req, res) {
+    console.log(req.url);
+    let path = req.url;
+    res.send(path.substring(1, 4));
+});
+
+// Dynamic route for '/hello/:name'
+app.get("/hello/:name", function(req, res) {
+    console.log(req.params);
+    res.send("Hello " + req.params.name);
+});
+
+// EXERCISE 2: Dynamic route '/user/:id'
+app.get("/user/:id", function(req, res) {
+    res.send("User ID: " + req.params.id);
+});
+
+// EXERCISE 3: Dynamic route '/student/:name/:id'
+app.get("/student/:name/:id", function(req, res) {
+    res.send(`<h1>Student Information</h1><p>Name: ${req.params.name}</p><p>ID: ${req.params.id}</p>`);
+});
+
+// EXERCISE 5: Modify '/db_test/:id' route to query specific user from database
+app.get("/db_test/:id", function(req, res) {
+    let sql = `SELECT name FROM test_table WHERE id = ?`;
+    db.query(sql, [req.params.id]).then(results => {
+        if (results.length > 0) {
+            res.send(`<h1>Result</h1><p>Name: ${results[0].name}</p>`);
+        } else {
+            res.send("No record found.");
+        }
+    }).catch(error => {
+        res.send("Database error: " + error);
     });
 });
 
-// NEW ROUTE: Create a route for /db_test/:id
-app.get("/db_test/:id", function(req, res) {
-    const id = req.params.id;
-    console.log(`Requested URL: ${req.url}`);
-    console.log(`ID: ${id}`);
-
-    const sql = 'SELECT * FROM test_table WHERE id = ?';
-    db.query(sql, [id])
-        .then(results => {
-            console.log(results);
-            if (results.length > 0) {
-                const name = results[0].name;
-                const htmlResponse = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Database Test</title>
-                    </head>
-                    <body>
-                        <h1>Database Test</h1>
-                        <p>The name for ID <strong>${id}</strong> is: <strong>${name}</strong>.</p>
-                    </body>
-                    </html>
-                `;
-                res.send(htmlResponse);
-            } else {
-                res.status(404).send("No record found for ID " + id);
-            }
-        })
-        .catch(error => {
-            console.error('Error executing query:', error);
-            res.status(500).send('An error occurred while querying the database.');
-        });
+// Additional Task 1: Reverse "roehampton"
+app.get("/roehampton/reverse", function(req, res) {
+    let reversed = "roehampton".split("").reverse().join("");
+    res.send(`<h1>Reversed: ${reversed}</h1>`);
 });
 
-// NEW ROUTE: Create a route for "/hello/:name"
-app.get("/hello/:name", function(req, res) {
-    const name = req.params.name;
-    res.send(`Hello, ${name}!`);
+// Additional Task 2: Create a dynamic route '/number/:n' to print numbers in a table
+app.get("/number/:n", function(req, res) {
+    let n = parseInt(req.params.n);
+    if (isNaN(n) || n < 0) {
+        return res.send("Invalid number.");
+    }
+    let tableRows = "";
+    for (let i = 0; i <= n; i++) {
+        tableRows += `<tr><td>${i}</td></tr>`;
+    }
+    res.send(`<h1>Numbers from 0 to ${n}</h1><table border='1'>${tableRows}</table>`);
 });
 
-// Start server on port 3000
+// Serve static files
+app.use(express.static("static"));
+
 app.listen(3000, function() {
-    console.log(`Server running at http://127.0.0.1:3000/`);
+    console.log("Server running at http://127.0.0.1:3000/");
 });
