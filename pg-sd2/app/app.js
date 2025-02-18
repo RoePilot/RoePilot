@@ -4,6 +4,10 @@ const db = require("./services/db");
 const app = express();
 app.use(express.static("static"));
 
+// Use the Pug templating engine
+app.set('view engine', 'pug');
+app.set('views', './app/views');
+
 // EXERCISE 1: Modify root route to display "Hello [Your Name]"
 app.get("/", function(req, res) {
     res.send("Hello [Your Name]!");
