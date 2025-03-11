@@ -5,8 +5,23 @@ block content
   if error
     p.error #{error}
   else if users && users.length
-    ul
-      each user in users
-        li #{user.id} - #{user.name}
+    table(border="1")
+      thead
+        tr
+          th UserID
+          th Username
+          th Email
+          th UniversityID
+          th CredibilityScore
+          th RegistrationDate
+      tbody
+        each user in users
+          tr
+            td #{user.UserID}
+            td #{user.Username}
+            td #{user.Email}
+            td #{user.UniversityID}
+            td #{user.CredibilityScore}
+            td #{user.RegistrationDate}
   else
     p No users available.
