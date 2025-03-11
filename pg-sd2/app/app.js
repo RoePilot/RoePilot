@@ -27,7 +27,7 @@ app.get("/users", (req, res) => {
 
 // Support Requests route
 app.get("/supportrequests", (req, res) => {
-  const sql = "SELECT * FROM support_requests";  // Adjust table name/fields as needed
+  const sql = "SELECT * FROM supportrequests";  // Adjust table name/fields as needed
   db.query(sql)
     .then(results => {
       res.render("supportrequests", { supportrequests: results });
