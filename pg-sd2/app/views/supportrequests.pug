@@ -5,8 +5,21 @@ block content
   if error
     p.error #{error}
   else if supportrequests && supportrequests.length
-    ul
-      each request in supportrequests
-        li #{request.id} - #{request.description}
+    table(border="1")
+      thead
+        tr
+          th RequestID
+          th UserID
+          th Title
+          th Description
+          th PostDate
+      tbody
+        each request in supportrequests
+          tr
+            td #{request.RequestID}
+            td #{request.UserID}
+            td #{request.Title}
+            td #{request.Description}
+            td #{request.PostDate}
   else
     p No support requests available.

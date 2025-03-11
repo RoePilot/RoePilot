@@ -5,8 +5,17 @@ block content
   if error
     p.error #{error}
   else if categories && categories.length
-    ul
-      each category in categories
-        li #{category.id} - #{category.name}
+    table(border="1")
+      thead
+        tr
+          th CategoryID
+          th CategoryName
+          th Description
+      tbody
+        each category in categories
+          tr
+            td #{category.CategoryID}
+            td #{category.CategoryName}
+            td #{category.Description}
   else
     p No categories available.

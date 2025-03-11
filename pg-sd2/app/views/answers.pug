@@ -5,8 +5,21 @@ block content
   if error
     p.error #{error}
   else if answers && answers.length
-    ul
-      each answer in answers
-        li #{answer.id} - #{answer.content}
+    table(border="1")
+      thead
+        tr
+          th AnswerID
+          th RequestID
+          th AnswerText
+          th PostDate
+          th NumOfUpvotes
+      tbody
+        each answer in answers
+          tr
+            td #{answer.AnswerID}
+            td #{answer.RequestID}
+            td #{answer.AnswerText}
+            td #{answer.PostDate}
+            td #{answer.NumOfUpvotes}
   else
     p No answers available.
