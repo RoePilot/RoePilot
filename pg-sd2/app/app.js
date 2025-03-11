@@ -8,74 +8,58 @@ app.use(express.static("static"));
 app.set('view engine', 'pug');
 app.set('views', './app/views');
 
-// EXERCISE 1: Modify root route to display "Hello [Your Name]"
+// Root route: Display "Hello [Your Name]!"
 app.get("/", function(req, res) {
-    res.send("Hello [Your Name]!");
-});
-
-// EXERCISE 2: Create a new route '/roehampton'
-app.get("/roehampton", function(req, res) {
-    console.log(req.url);
-    res.send("Hello Roehampton!");
-});
-
-// EXERCISE 4: Add logic to return first 3 letters of request path
-app.get("/roehampton", function(req, res) {
-    console.log(req.url);
-    let path = req.url;
-    res.send(path.substring(1, 4));
+    res.render("index", { name: "Your Name" });
 });
 
 // Dynamic route for '/hello/:name'
 app.get("/hello/:name", function(req, res) {
-    console.log(req.params);
-    res.send("Hello " + req.params.name);
+    res.render("hello", { name: req.params.name });
 });
 
-// EXERCISE 2: Dynamic route '/user/:id'
+// Dynamic route '/user/:id'
 app.get("/user/:id", function(req, res) {
-    res.send("User ID: " + req.params.id);
+    res.render("user", { id: req.params.id });
 });
 
-// EXERCISE 3: Dynamic route '/student/:name/:id'
+// Dynamic route '/student/:name/:id'
 app.get("/student/:name/:id", function(req, res) {
-    res.send(`<h1>Student Information</h1><p>Name: ${req.params.name}</p><p>ID: ${req.params.id}</p>`);
+    res.render("student", { name: req.params.name, id: req.params.id });
 });
 
-// EXERCISE 5: Modify '/db_test/:id' route to query specific user from database
+// DB test route: query specific user from database
 app.get("/db_test/:id", function(req, res) {
     let sql = `SELECT name FROM test_table WHERE id = ?`;
     db.query(sql, [req.params.id]).then(results => {
         if (results.length > 0) {
-            res.send(`<h1>Result</h1><p>Name: ${results[0].name}</p>`);
+            res.render("db_test", { result: results[0] });
         } else {
-            res.send("No record found.");
+            res.render("db_test", { error: "No record found." });
         }
     }).catch(error => {
-        res.send("Database error: " + error);
+        res.render("db_test", { error: "Database error: " + error });
     });
 });
 
-// Additional Task 1: Reverse "roehampton"
-app.get("/roehampton/reverse", function(req, res) {
-    let reversed = "roehampton".split("").reverse().join("");
-    res.send(`<h1>Reversed: ${reversed}</h1>`);
+// Roehampton route: combine greeting and substring logic
+app.get("/roehampton", function(req, res) {
+    let greeting = "Hello Roehampton!";
+    let substring = req.url.substring(1, 4);
+    res.render("roehampton", { greeting, substring });
 });
 
-// Additional Task 2: Create a dynamic route '/number/:n' to print numbers in a table
+// Additional Task 2: Dynamic route '/number/:n' to print numbers in a table
 app.get("/number/:n", function(req, res) {
     let n = parseInt(req.params.n);
     if (isNaN(n) || n < 0) {
         return res.send("Invalid number.");
     }
-    let tableRows = "";
-    for (let i = 0; i <= n; i++) {
-        tableRows += `<tr><td>${i}</td></tr>`;
-    }
-    res.send(`<h1>Numbers from 0 to ${n}</h1><table border='1'>${tableRows}</table>`);
+    let numbers = Array.from({ length: n + 1 }, (_, i) => i);
+    res.render("number", { n, numbers });
 });
 
-// Serve static files
+// (Optional) Serve static files from the static folder if needed
 app.use(express.static("static"));
 
 app.listen(3000, function() {
