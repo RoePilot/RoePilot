@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Support Requests
+  if error
+    p.error #{error}
+  else if supportrequests && supportrequests.length
+    ul
+      each request in supportrequests
+        li #{request.id} - #{request.description}
+  else
+    p No support requests available.

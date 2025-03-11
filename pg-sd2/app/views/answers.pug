@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Answers
+  if error
+    p.error #{error}
+  else if answers && answers.length
+    ul
+      each answer in answers
+        li #{answer.id} - #{answer.content}
+  else
+    p No answers available.

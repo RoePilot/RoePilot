@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Categories
+  if error
+    p.error #{error}
+  else if categories && categories.length
+    ul
+      each category in categories
+        li #{category.id} - #{category.name}
+  else
+    p No categories available.
