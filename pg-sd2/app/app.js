@@ -1,6 +1,5 @@
 const express = require("express");
 const db = require("./services/db");
-const models = require("./models"); // Import models for upvoting
 const app = express();
 
 app.use(express.static("static"));
@@ -72,16 +71,7 @@ app.get("/answers", (req, res) => {
     });
 });
 
-// New route for upvoting an answer
-app.post("/answers/upvote/:id", (req, res) => {
-  const answerId = req.params.id;
-  models.upvoteAnswer(answerId)
-    .then(() => res.redirect("/answers"))
-    .catch(error => {
-      res.render("answers", { error: "Database error: " + error });
-    });
-});
-
 app.listen(3000, () => {
   console.log("Server running at http://127.0.0.1:3000/");
+  
 });
