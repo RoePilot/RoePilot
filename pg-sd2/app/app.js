@@ -1,64 +1,92 @@
 const express = require("express");
 const db = require("./services/db");
+const session = require("express-session");
+const bcrypt = require("bcrypt");
+
 const app = express();
 
 app.use(express.static("static"));
+app.use(express.urlencoded({ extended: true })); // To parse form data
 
-// Set up the Pug templating engine
+app.use(
+  session({
+    secret: "your_secret_key", // Change this to a strong secret
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
 app.set("view engine", "pug");
 app.set("views", "./app/views");
 
-// Home route
+// Middleware to check authentication
+function isAuthenticated(req, res, next) {
+  if (req.session.userId) {
+    return next();
+  }
+  res.redirect("/login");
+}
+
+// Home Route
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index", { user: req.session.userId });
 });
 
-// Users route: fetch all users from the database
-app.get("/users", (req, res) => {
-  const sql = "SELECT * FROM users";  // Adjust table name/fields as needed
-  db.query(sql)
-    .then(results => {
-      res.render("users", { users: results });
-    })
-    .catch(error => {
-      res.render("users", { error: "Database error: " + error });
-    });
+// Show Login Form
+app.get("/login", (req, res) => {
+  res.render("login");
 });
 
-// Support Requests route
-app.get("/supportrequests", (req, res) => {
-  const sql = "SELECT * FROM supportrequests";  // Adjust table name/fields as needed
-  db.query(sql)
+// Handle Login Submission
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  db.query("SELECT * FROM users WHERE email = ?", [email])
     .then(results => {
-      res.render("supportrequests", { supportrequests: results });
+      if (results.length === 0) {
+        return res.render("login", { error: "Invalid email or password" });
+      }
+
+      const user = results[0];
+
+      bcrypt.compare(password, user.password_hash, (err, isMatch) => {
+        if (isMatch) {
+          req.session.userId = user.id;
+          res.redirect("/dashboard");
+        } else {
+          res.render("login", { error: "Invalid email or password" });
+        }
+      });
     })
-    .catch(error => {
-      res.render("supportrequests", { error: "Database error: " + error });
-    });
+    .catch(error => res.render("login", { error: "Database error: " + error }));
 });
 
-// Categories route
-app.get("/categories", (req, res) => {
-  const sql = "SELECT * FROM categories";  // Adjust table name/fields as needed
-  db.query(sql)
-    .then(results => {
-      res.render("categories", { categories: results });
-    })
-    .catch(error => {
-      res.render("categories", { error: "Database error: " + error });
-    });
+// Show Register Form
+app.get("/register", (req, res) => {
+  res.render("register");
 });
 
-// Answers route
-app.get("/answers", (req, res) => {
-  const sql = "SELECT * FROM answers";  // Adjust table name/fields as needed
-  db.query(sql)
-    .then(results => {
-      res.render("answers", { answers: results });
-    })
-    .catch(error => {
-      res.render("answers", { error: "Database error: " + error });
-    });
+// Handle Registration
+app.post("/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  db.query("INSERT INTO users (email, password_hash) VALUES (?, ?)", [email, hashedPassword])
+    .then(() => res.redirect("/login"))
+    .catch(error => res.render("register", { error: "Database error: " + error }));
+});
+
+// Dashboard (Protected Route)
+app.get("/dashboard", isAuthenticated, (req, res) => {
+  res.render("dashboard", { user: req.session.userId });
+});
+
+// Logout Route
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
 });
 
 app.listen(3000, () => {
