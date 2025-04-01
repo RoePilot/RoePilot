@@ -9,12 +9,6 @@ app.use(express.static("static"));
 app.set("view engine", "pug");
 app.set("views", "./app/views");
 
-// Function to upvote an answer
-function upvoteAnswer(answerId) {
-  const sql = "UPDATE answers SET NumOfUpvote = NumOfUpvote + 1 WHERE AnswerID = ?";
-  return db.query(sql, [answerId]);
-}
-
 // Home route
 app.get("/", (req, res) => {
   res.render("index");
@@ -81,7 +75,7 @@ app.get("/answers", (req, res) => {
 // Upvote route
 app.post("/answers/upvote/:id", (req, res) => {
   const answerId = req.params.id;
-  upvoteAnswer(answerId)
+  answerModel.upvoteAnswer(answerId)
     .then(() => {
       res.redirect("/answers");
     })
