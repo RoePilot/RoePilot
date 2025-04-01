@@ -21,7 +21,7 @@ block content
             td #{answer.RequestID}
             td #{answer.AnswerText}
             td #{answer.PostDate}
-            td #{answer.NumOfUpvotes}
+            td #{answer.NumOfUpvote}
             td
               form(action="/answers/upvote/" + answer.AnswerID, method="post")
                 button(type="submit") Upvote
