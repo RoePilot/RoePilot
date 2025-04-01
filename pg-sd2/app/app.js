@@ -4,18 +4,15 @@ const app = express();
 const { User } = require("./models/user");
 const answerModel = require('./models/answerModel');
 
-// Middleware to check if user is authenticated (example placeholder)
-const requireAuth = (req, res, next) => {
-  // This is a placeholder; implement actual auth logic (e.g., check session or token)
-  if (!req.user) {
-    return res.status(401).send("You must be logged in to upvote.");
-  }
-  next();
-};
-
 app.use(express.static("static"));
+app.use(express.json());
 
-// Set up the Pug templating engine
+// Basic authentication middleware (replace with your actual auth system)
+app.use((req, res, next) => {
+  req.user = { id: 1 }; // Temporary - replace with real auth
+  next();
+});
+
 app.set("view engine", "pug");
 app.set("views", "./app/views");
 
@@ -25,80 +22,88 @@ app.get("/", (req, res) => {
 });
 
 // Users route
-app.get("/users", (req, res) => {
-  const sql = "SELECT * FROM users";
-  db.query(sql)
-    .then(results => {
-      res.render("users", { users: results });
-    })
-    .catch(error => {
-      res.render("users", { error: "Database error: " + error });
-    });
+app.get("/users", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM users";
+    const results = await db.query(sql);
+    res.render("users", { users: results });
+  } catch (error) {
+    console.error('Users route error:', error);
+    res.status(500).render("users", { error: "Database error: " + error.message });
+  }
 });
 
 // Register
-app.get('/register', function (req, res) {
+app.get('/register', (req, res) => {
   res.render('register');
 });
 
 // Login
-app.get('/login', function (req, res) {
+app.get('/login', (req, res) => {
   res.render('login');
 });
 
 // Support Requests route
-app.get("/understoodsupportrequests", (req, res) => {
-  const sql = "SELECT * FROM support_requests";
-  db.query(sql)
-    .then(results => {
-      res.render("supportrequests", { supportrequests: results });
-    })
-    .catch(error => {
-      res.render("supportrequests", { error: "Database error: " + error });
-    });
+app.get("/understoodsupportrequests", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM support_requests";
+    const results = await db.query(sql);
+    res.render("supportrequests", { supportrequests: results });
+  } catch (error) {
+    console.error('Support requests error:', error);
+    res.status(500).render("supportrequests", { error: "Database error: " + error.message });
+  }
 });
 
 // Categories route
-app.get("/categories", (req, res) => {
-  const sql = "SELECT * FROM categories";
-  db.query(sql)
-    .then(results => {
-      res.render("categories", { categories: results });
-    })
-    .catch(error => {
-      res.render("categories", { error: "Database error: " + error });
-    });
+app.get("/categories", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM categories";
+    const results = await db.query(sql);
+    res.render("categories", { categories: results });
+  } catch (error) {
+    console.error('Categories error:', error);
+    res.status(500).render("categories", { error: "Database error: " + error.message });
+  }
 });
 
 // Answers route
-app.get("/answers", (req, res) => {
-  const sql = "SELECT * FROM answers";
-  db.query(sql)
-    .then(results => {
-      res.render("answers", { answers: results });
-    })
-    .catch(error => {
-      res.render("answers", { error: "Database error: " + error });
-    });
+app.get("/answers", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM answers";
+    const results = await db.query(sql);
+    res.render("answers", { answers: results });
+  } catch (error) {
+    console.error('Answers route error:', error);
+    res.status(500).render("answers", { error: "Database error: " + error.message });
+  }
 });
 
 // Upvote route
-app.post("/answers/upvote/:id", requireAuth, (req, res) => {
-  const answerId = req.params.id;
-  const userId = req.user.id; // Assumes req.user.id is set by auth middleware
-  answerModel.upvoteAnswer(userId, answerId)
-    .then(() => {
-      res.redirect("/answers");
-    })
-    .catch(error => {
-      if (error === "Already upvoted") {
-        res.status(403).send("You have already upvoted this answer.");
-      } else {
-        res.status(500).send("Error upvoting answer: " + error);
-      }
-    });
+app.post("/answers/upvote/:id", async (req, res) => {
+  try {
+    const answerId = req.params.id;
+    const userId = req.user.id;
+
+    const result = await answerModel.upvoteAnswer(answerId, userId);
+    
+    if (!result.success) {
+      return res.status(400).json({ error: result.message });
+    }
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Upvote error:', error);
+    res.status(500).json({ error: "Error upvoting answer: " + error.message });
+  }
 });
 
 app.listen(3000, () => {
   console.log("Server running at http://127.0.0.1:3000/");
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unexpected error:', err);
+  res.status(500).send('Something went wrong on the server');
 });

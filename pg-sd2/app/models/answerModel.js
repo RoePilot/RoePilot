@@ -1,22 +1,39 @@
+// answerModel.js
 const db = require('../services/db');
 
-// Function to upvote an answer, ensuring only one upvote per user per answer
-function upvoteAnswer(userId, answerId) {
-  const insertSql = "INSERT INTO upvotes (user_id, answer_id) VALUES (?, ?)";
-  return db.query(insertSql, [userId, answerId])
-    .then(() => {
-      // If insert succeeds, increment NumOfUpvote
-      const updateSql = "UPDATE answers SET NumOfUpvote = NumOfUpvote + 1 WHERE AnswerID = ?";
-      return db.query(updateSql, [answerId]);
-    })
-    .catch(error => {
-      if (error.code === 'ER_DUP_ENTRY') {
-        // User has already upvoted
-        return Promise.reject("Already upvoted");
-      }
-      // Other errors (e.g., invalid answerId)
-      return Promise.reject(error);
-    });
+async function upvoteAnswer(answerId, userId) {
+  try {
+    // Ensure parameters are valid
+    if (!answerId || !userId) {
+      throw new Error('Missing answerId or userId');
+    }
+
+    // Check if user has already upvoted
+    const checkSql = "SELECT * FROM answer_upvotes WHERE AnswerID = ? AND UserID = ?";
+    const checkResult = await db.query(checkSql, [answerId, userId]);
+
+    if (checkResult.length > 0) {
+      return { success: false, message: "User has already upvoted this answer" };
+    }
+
+    // Start a transaction to ensure both queries succeed or fail together
+    await db.query('START TRANSACTION');
+
+    // Record the upvote
+    const insertSql = "INSERT INTO answer_upvotes (AnswerID, UserID) VALUES (?, ?)";
+    await db.query(insertSql, [answerId, userId]);
+
+    // Update the counter
+    const updateSql = "UPDATE answers SET NumOfUpvote = NumOfUpvote + 1 WHERE AnswerID = ?";
+    await db.query(updateSql, [answerId]);
+
+    await db.query('COMMIT');
+    
+    return { success: true };
+  } catch (error) {
+    await db.query('ROLLBACK');
+    throw error;
+  }
 }
 
 module.exports = {
