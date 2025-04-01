@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title Register
+  body
+    h2 Register
+    form(action="/register" method="post")
+      input(type="text" name="username" placeholder="Username" required)
+      input(type="password" name="password" placeholder="Password" required)
+      button(type="submit") Register
+    if error
+      p(style="color:red") #{error}

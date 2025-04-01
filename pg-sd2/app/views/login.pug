@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title Login
+  body
+    h2 Login
+    form(action="/login" method="post")
+      input(type="text" name="username" placeholder="Username" required)
+      input(type="password" name="password" placeholder="Password" required)
+      button(type="submit") Login
+    if error
+      p(style="color:red") #{error}
