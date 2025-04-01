@@ -25,9 +25,19 @@ app.get("/users", (req, res) => {
     });
 });
 
+// Register
+app.get('/register', function (req, res) {
+  res.render('register');
+});
+
+// Login
+app.get('/login', function (req, res) {
+  res.render('login');
+});
+
 // Support Requests route
 app.get("/supportrequests", (req, res) => {
-  const sql = "SELECT * FROM supportrequests";  // Adjust table name/fields as needed
+  const sql = "SELECT * FROM support_requests";  // Adjust table name/fields as needed
   db.query(sql)
     .then(results => {
       res.render("supportrequests", { supportrequests: results });
@@ -63,4 +73,5 @@ app.get("/answers", (req, res) => {
 
 app.listen(3000, () => {
   console.log("Server running at http://127.0.0.1:3000/");
+  
 });
