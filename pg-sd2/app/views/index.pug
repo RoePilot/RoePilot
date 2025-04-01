@@ -2,4 +2,8 @@ extends layout
 
 block content
   h1 Welcome to Our Technical Support Website
-  p Use the navigation links above to browse different sections.
+  if user
+    p Hello, #{user.username}! Use the navigation links above to browse different sections.
+  else
+    p Please log in or register to access the technical support features.
+    p Use the navigation links above to browse different sections.
