@@ -4,6 +4,15 @@ const app = express();
 const { User } = require("./models/user");
 const answerModel = require('./models/answerModel');
 
+// Middleware to check if user is authenticated (example placeholder)
+const requireAuth = (req, res, next) => {
+  // This is a placeholder; implement actual auth logic (e.g., check session or token)
+  if (!req.user) {
+    return res.status(401).send("You must be logged in to upvote.");
+  }
+  next();
+};
+
 app.use(express.static("static"));
 
 // Set up the Pug templating engine
@@ -74,14 +83,19 @@ app.get("/answers", (req, res) => {
 });
 
 // Upvote route
-app.post("/answers/upvote/:id", (req, res) => {
+app.post("/answers/upvote/:id", requireAuth, (req, res) => {
   const answerId = req.params.id;
-  answerModel.upvoteAnswer(answerId)
+  const userId = req.user.id; // Assumes req.user.id is set by auth middleware
+  answerModel.upvoteAnswer(userId, answerId)
     .then(() => {
       res.redirect("/answers");
     })
     .catch(error => {
-      res.status(500).send("Error upvoting answer: " + error);
+      if (error === "Already upvoted") {
+        res.status(403).send("You have already upvoted this answer.");
+      } else {
+        res.status(500).send("Error upvoting answer: " + error);
+      }
     });
 });
 
