@@ -10,7 +10,7 @@ app.set("views", "./app/views");
 
 // Function to upvote an answer
 function upvoteAnswer(answerId) {
-  const sql = "UPDATE answers SET NumOfUpvotes = NumOfUpvotes + 1 WHERE AnswerID = ?";
+  const sql = "UPDATE answers SET NumOfUpvote = NumOfUpvote + 1 WHERE AnswerID = ?";
   return db.query(sql, [answerId]);
 }
 
