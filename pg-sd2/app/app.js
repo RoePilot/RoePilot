@@ -8,14 +8,20 @@ app.use(express.static("static"));
 app.set("view engine", "pug");
 app.set("views", "./app/views");
 
+// Function to upvote an answer
+function upvoteAnswer(answerId) {
+  const sql = "UPDATE answers SET NumOfUpvotes = NumOfUpvotes + 1 WHERE AnswerID = ?";
+  return db.query(sql, [answerId]);
+}
+
 // Home route
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-// Users route: fetch all users from the database
+// Users route
 app.get("/users", (req, res) => {
-  const sql = "SELECT * FROM users";  // Adjust table name/fields as needed
+  const sql = "SELECT * FROM users";
   db.query(sql)
     .then(results => {
       res.render("users", { users: results });
@@ -36,8 +42,8 @@ app.get('/login', function (req, res) {
 });
 
 // Support Requests route
-app.get("/supportrequests", (req, res) => {
-  const sql = "SELECT * FROM support_requests";  // Adjust table name/fields as needed
+app.get("/understoodsupportrequests", (req, res) => {
+  const sql = "SELECT * FROM support_requests";
   db.query(sql)
     .then(results => {
       res.render("supportrequests", { supportrequests: results });
@@ -49,7 +55,7 @@ app.get("/supportrequests", (req, res) => {
 
 // Categories route
 app.get("/categories", (req, res) => {
-  const sql = "SELECT * FROM categories";  // Adjust table name/fields as needed
+  const sql = "SELECT * FROM categories";
   db.query(sql)
     .then(results => {
       res.render("categories", { categories: results });
@@ -61,7 +67,7 @@ app.get("/categories", (req, res) => {
 
 // Answers route
 app.get("/answers", (req, res) => {
-  const sql = "SELECT * FROM answers";  // Adjust table name/fields as needed
+  const sql = "SELECT * FROM answers";
   db.query(sql)
     .then(results => {
       res.render("answers", { answers: results });
@@ -71,7 +77,18 @@ app.get("/answers", (req, res) => {
     });
 });
 
+// Upvote route
+app.post("/answers/upvote/:id", (req, res) => {
+  const answerId = req.params.id;
+  upvoteAnswer(answerId)
+    .then(() => {
+      res.redirect("/answers");
+    })
+    .catch(error => {
+      res.status(500).send("Error upvoting answer: " + error);
+    });
+});
+
 app.listen(3000, () => {
   console.log("Server running at http://127.0.0.1:3000/");
-  
 });
