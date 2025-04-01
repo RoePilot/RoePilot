@@ -5,14 +5,8 @@ const { User } = require("./models/user");
 const answerModel = require('./models/answerModel');
 
 app.use(express.static("static"));
-app.use(express.json());
 
-// Basic authentication middleware (replace with your actual auth system)
-app.use((req, res, next) => {
-  req.user = { id: 1 }; // Temporary - replace with real auth
-  next();
-});
-
+// Set up the Pug templating engine
 app.set("view engine", "pug");
 app.set("views", "./app/views");
 
@@ -22,88 +16,75 @@ app.get("/", (req, res) => {
 });
 
 // Users route
-app.get("/users", async (req, res) => {
-  try {
-    const sql = "SELECT * FROM users";
-    const results = await db.query(sql);
-    res.render("users", { users: results });
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ error: "User not authenticated" });
-    }
-  } catch (error) {
-    console.error('Users route error:', error);
-    res.status(500).render("users", { error: "Database error: " + error.message });
-  }
+app.get("/users", (req, res) => {
+  const sql = "SELECT * FROM users";
+  db.query(sql)
+    .then(results => {
+      res.render("users", { users: results });
+    })
+    .catch(error => {
+      res.render("users", { error: "Database error: " + error });
+    });
 });
 
 // Register
-app.get('/register', (req, res) => {
+app.get('/register', function (req, res) {
   res.render('register');
 });
 
 // Login
-app.get('/login', (req, res) => {
+app.get('/login', function (req, res) {
   res.render('login');
 });
 
 // Support Requests route
-app.get("/understoodsupportrequests", async (req, res) => {
-  try {
-    const sql = "SELECT * FROM support_requests";
-    const results = await db.query(sql);
-    res.render("supportrequests", { supportrequests: results });
-  } catch (error) {
-    console.error('Support requests error:', error);
-    res.status(500).render("supportrequests", { error: "Database error: " + error.message });
-  }
+app.get("/understoodsupportrequests", (req, res) => {
+  const sql = "SELECT * FROM support_requests";
+  db.query(sql)
+    .then(results => {
+      res.render("supportrequests", { supportrequests: results });
+    })
+    .catch(error => {
+      res.render("supportrequests", { error: "Database error: " + error });
+    });
 });
 
 // Categories route
-app.get("/categories", async (req, res) => {
-  try {
-    const sql = "SELECT * FROM categories";
-    const results = await db.query(sql);
-    res.render("categories", { categories: results });
-  } catch (error) {
-    console.error('Categories error:', error);
-    res.status(500).render("categories", { error: "Database error: " + error.message });
-  }
+app.get("/categories", (req, res) => {
+  const sql = "SELECT * FROM categories";
+  db.query(sql)
+    .then(results => {
+      res.render("categories", { categories: results });
+    })
+    .catch(error => {
+      res.render("categories", { error: "Database error: " + error });
+    });
 });
 
 // Answers route
-app.get("/answers", async (req, res) => {
-  try {
-    const sql = "SELECT * FROM answers";
-    const results = await db.query(sql);
-    res.render("answers", { answers: results });
-  } catch (error) {
-    console.error('Answers route error:', error);
-    res.status(500).render("answers", { error: "Database error: " + error.message });
-  }
+app.get("/answers", (req, res) => {
+  const sql = "SELECT * FROM answers";
+  db.query(sql)
+    .then(results => {
+      res.render("answers", { answers: results });
+    })
+    .catch(error => {
+      res.render("answers", { error: "Database error: " + error });
+    });
 });
 
 // Upvote route
-app.post("/answers/upvote/:id", async (req, res) => {
-  try {
-    const answerId = req.params.id;
-    const userId = req.user.id;
-    const result = await answerModel.upvoteAnswer(answerId, userId);
-    if (!result.success) {
-      return res.status(400).json({ error: result.message });  
-    }
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Upvote error:', error);
-    res.status(500).json({ error: "Error upvoting answer: " + error.message });
-  }
+app.post("/answers/upvote/:id", (req, res) => {
+  const answerId = req.params.id;
+  answerModel.upvoteAnswer(answerId)
+    .then(() => {
+      res.redirect("/answers");
+    })
+    .catch(error => {
+      res.status(500).send("Error upvoting answer: " + error);
+    });
 });
 
 app.listen(3000, () => {
   console.log("Server running at http://127.0.0.1:3000/");
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Unexpected error:', err);
-  res.status(500).send('Something went wrong on the server');
 });
