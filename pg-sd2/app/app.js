@@ -27,6 +27,9 @@ app.get("/users", async (req, res) => {
     const sql = "SELECT * FROM users";
     const results = await db.query(sql);
     res.render("users", { users: results });
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
   } catch (error) {
     console.error('Users route error:', error);
     res.status(500).render("users", { error: "Database error: " + error.message });
@@ -84,13 +87,10 @@ app.post("/answers/upvote/:id", async (req, res) => {
   try {
     const answerId = req.params.id;
     const userId = req.user.id;
-
     const result = await answerModel.upvoteAnswer(answerId, userId);
-    
     if (!result.success) {
-      return res.status(400).json({ error: result.message });
+      return res.status(400).json({ error: result.message });  
     }
-    
     res.json({ success: true });
   } catch (error) {
     console.error('Upvote error:', error);
