@@ -13,6 +13,7 @@ block content
           th AnswerText
           th PostDate
           th NumOfUpvotes
+          th Actions
       tbody
         each answer in answers
           tr
@@ -21,5 +22,8 @@ block content
             td #{answer.AnswerText}
             td #{answer.PostDate}
             td #{answer.NumOfUpvotes}
+            td
+              form(action="/answers/upvote/" + answer.AnswerID, method="post")
+                button(type="submit") Upvote
   else
     p No answers available.
