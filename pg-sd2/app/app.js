@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("./services/db");
 const app = express();
+const { User } = require("./models/user");
 
 app.use(express.static("static"));
 
