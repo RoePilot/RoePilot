@@ -2,6 +2,7 @@ const express = require("express");
 const db = require("./services/db");
 const app = express();
 const { User } = require("./models/user");
+const answerModel = require('./models/answerModel');
 
 app.use(express.static("static"));
 
