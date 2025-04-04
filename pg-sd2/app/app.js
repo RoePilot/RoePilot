@@ -2,11 +2,12 @@ const express = require("express");
 const db = require("./services/db");
 const app = express();
 const { User } = require("./models/user");
+const session = require("express-session");
 const answerModel = require('./models/answerModel');
 const multer = require("multer");
 
 // Set the sessions
-var session = require('express-session');
+app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'secretkeysdfjsflyoifasd',
   resave: false,
@@ -31,17 +32,6 @@ app.use(express.static("static"));
 // Set up the Pug templating engine
 app.set("view engine", "pug");
 app.set("views", "./app/views");
-
-// Create a route for root - /
-app.get("/", function(req, res) {
-  console.log(req.session);
-  if (req.session.uid) {
-  res.send('Welcome back, ' + req.session.uid + '!');
-} else {
-  res.send('Please login to view this page!');
-}
-res.end();
-});
 
 // Home route
 app.get("/", (req, res) => {
@@ -68,71 +58,35 @@ app.get("/users", async (req, res) => {
   }
 });
 
+// Handle register
+app.post("/register", async (req, res) => {
+  const { username, email, password, universityId } = req.body;
+  const user = new User({ email, username });
 
-// Register
-app.get('/register', function (req, res) {
-  res.render('register');
-});
-
-// Login
-app.get('/login', function (req, res) {
-  res.render('login');
-});
-
-app.post('/set-password', async function (req, res) {
-  params = req.body;
-  var user = new User(params.email);
   try {
-      uId = await user.getIdFromEmail();
-      if (uId) {
-          // If a valid, existing user is found, set the password and redirect to the users single-student page
-          await user.setUserPassword(params.password);
-          console.log(req.session.id);
-          res.send('Password set successfully');
-      }
-      else {
-          // If no existing user is found, add a new one
-          newId = await user.addUser(params.email);
-          res.send('Perhaps a page where a new user sets a programme would be good here');
-      }
+    await user.addUser({ username, email, password, universityId });
+    res.render("register", { success: "Account created! You can now log in." });
   } catch (err) {
-      console.error(`Error while adding password `, err.message);
+    res.render("register", { error: "Error creating user: " + err });
   }
 });
 
-// Check submitted email and password pair
-app.post('/authenticate', async function (req, res) {
-  params = req.body;
-  var user = new User(params.email);
-  try {
-      uId = await user.getIdFromEmail();
-      if (uId) {
-          match = await user.authenticate(params.password);
-          if (match) {
-              req.session.uid = uId;
-              req.session.loggedIn = true;
-              console.log(req.session.id);
-              res.redirect('/student-single/' + uId);
-          }
-          else {
-              // TODO improve the user journey here
-              res.send('invalid password');
-          }
-      }
-      else {
-          res.send('invalid email');
-      }
-  } catch (err) {
-      console.error(`Error while comparing `, err.message);
+// Handle login
+app.post("/login", async (req, res) => {
+  const { identifier, password } = req.body;
+  const user = new User({});
+  const authUser = await user.authenticate(identifier, password);
+
+  if (authUser) {
+    req.session.user = {
+      id: authUser.UserID,
+      username: authUser.Username
+    };
+    res.redirect("/"); // or user dashboard
+  } else {
+    res.render("login", { error: "Invalid credentials." });
   }
 });
-
-// Logout
-app.get('/logout', function (req, res) {
-  req.session.destroy();
-  res.redirect('/login');
-});
-
 
 app.get("/supportrequests", async (req, res) => {
   const userId = req.query.user;
