@@ -40,6 +40,13 @@ block content
                   button(type="submit") Upvote
         else
           p.no-comments No answers yet.
+
+        // Answer submission form
+        if user
+          form(method="POST", action="/answers/" + post.RequestID, class="answer-form")
+            textarea(name="answerText", placeholder="Write your answer..." required)
+            button.btn(type="submit") Submit Answer
+
   else
     p No support requests available.
 
