@@ -1,3 +1,22 @@
+/* ✅ Load custom WinkySans font */
+@font-face {
+  font-family: 'WinkySans';
+  src: url('/fonts/WinkySans-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* ✅ Set as default font for the entire page */
+body {
+  font-family: 'WinkySans', sans-serif;
+  line-height: 1.6;
+  background-color: #fff;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+/* ✅ Post box styling */
 .post-box {
   border: 2px solid #ccc;
   padding: 1rem;
@@ -33,6 +52,7 @@ button {
   color: white;
   border-radius: 5px;
   cursor: pointer;
+  font-family: inherit;
 }
 
 button:hover {
@@ -103,6 +123,7 @@ a.btn {
   text-decoration: none;
   font-weight: bold;
   transition: background-color 0.2s ease;
+  font-family: inherit;
 }
 
 a.btn:hover {
@@ -116,6 +137,7 @@ a.back-link {
   color: #007bff;
   text-decoration: none;
   font-size: 0.95rem;
+  font-family: inherit;
 }
 
 a.back-link:hover {
