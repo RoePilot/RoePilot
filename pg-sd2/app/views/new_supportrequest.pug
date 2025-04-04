@@ -11,6 +11,6 @@ block content
     textarea(name="description", placeholder="Describe your issue..." required)
     select(name="categoryId" required)
       option(value="" disabled selected) -- Select a category --
-      each category in ['1', '2', '3', '4', '5'] // or fetch from DB
+      each category in ['1', '2', '3', '4', '5']
         option(value=category) Category #{category}
     button(type="submit") Post Request
