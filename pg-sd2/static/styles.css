@@ -171,3 +171,69 @@ a.back-link:hover {
 .category-card:hover {
   transform: translateY(-4px);
 }
+.form-container {
+  max-width: 400px;
+  background: #ffffff;
+  color: #000000;
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.form-container input {
+  display: block;
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.form-container button {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: #01a16e;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.form-container button:hover {
+  background-color: #018b5f;
+}
+
+p.small-text {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+p.small-text a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+p.small-text a:hover {
+  text-decoration: underline;
+}
+
+p.error {
+  color: red;
+  text-align: center;
+}
+
+p.success {
+  color: green;
+  text-align: center;
+}
