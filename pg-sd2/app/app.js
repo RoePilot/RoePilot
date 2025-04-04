@@ -76,14 +76,23 @@ app.get("/users", async (req, res) => {
 });
 
 // Handle register
-app.post("/register", async (req, res) => {
-  const { Username, Email, PasswordHash, UniversityID } = req.body;
-  const user = new User({ Email, Username });
+aapp.post("/register", async (req, res) => {
+  const { username, email, password, universityId } = req.body;
+
+  // Create a user instance
+  const user = new User({ email, username });
 
   try {
-    await user.addUser({ Username, Email, PasswordHash, UniversityID });
+    await user.addUser({
+      username,
+      email,
+      password,
+      universityId
+    });
+
     res.render("register", { success: "Account created! You can now log in." });
   } catch (err) {
+    console.error(err);
     res.render("register", { error: "Error creating user: " + err });
   }
 });
