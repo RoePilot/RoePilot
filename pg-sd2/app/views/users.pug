@@ -2,26 +2,19 @@ extends layout
 
 block content
   h1 Users
+
   if error
     p.error #{error}
   else if users && users.length
-    table(border="1")
-      thead
-        tr
-          th UserID
-          th Username
-          th Email
-          th UniversityID
-          th CredibilityScore
-          th RegistrationDate
-      tbody
-        each user in users
-          tr
-            td #{user.UserID}
-            td #{user.Username}
-            td #{user.Email}
-            td #{user.UniversityID}
-            td #{user.CredibilityScore}
-            td #{user.RegistrationDate}
+    .user-grid
+      each user in users
+        .user-card
+          img.profile-img(src=(user.ProfilePic ? "/images/" + user.ProfilePic : "/images/default-avatar.png"), alt="Profile Picture")
+          h2 #{user.Username}
+          p Email: #{user.Email}
+          p University ID: #{user.UniversityID}
+          p Credibility Score: #{user.CredibilityScore}
+          p Registered On: #{user.RegistrationDate}
+          a.btn(href="/supportrequests?user=" + user.UserID) View Support Requests
   else
     p No users available.

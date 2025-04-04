@@ -1,7 +1,11 @@
 extends layout
 
 block content
-  h1 Support Requests
+  if filterUserName
+    h1 Support Requests by #{filterUserName}
+    a.back-link(href="/supportrequests") ← Back to All Support Requests
+  else
+    h1 Support Requests
 
   if error
     p.error #{error}
@@ -25,3 +29,5 @@ block content
                   button(type="submit") Upvote
         else
           p.no-comments No answers yet.
+  else
+    p No support requests available.
