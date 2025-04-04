@@ -40,13 +40,14 @@ app.set("view engine", "pug");
 app.set("views", "./app/views");
 
 // Home route
-app.get("/", (req, res) => {
-  res.redirect("/login");
+app.get("/home", requireLogin, (req, res) => {
+  res.render("index", { user: req.session.user });
 });
 
+
 // Login route
-app.get('/login', (req, res) => {
-  res.render('login');
+app.get("/", (req, res) => {
+  res.redirect("/login");
 });
 
 // Register route
