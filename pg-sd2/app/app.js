@@ -83,7 +83,7 @@ app.post("/answers/upvote/:id", (req, res) => {
   const answerId = req.params.id;
   answerModel.upvoteAnswer(answerId)
     .then(() => {
-      res.redirect("/answers");
+      res.redirect("/supportrequests");
     })
     .catch(error => {
       res.status(500).send("Error upvoting answer: " + error);
