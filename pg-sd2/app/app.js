@@ -44,6 +44,15 @@ app.get("/", requireLogin, (req, res) => {
   res.render("index", { user: req.session.user });
 });
 
+// Login route
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+// Register route
+app.get('/register', (req, res) => {
+  res.render('register');
+});
 
 // Users route
 app.get("/users", async (req, res) => {
