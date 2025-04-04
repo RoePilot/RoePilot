@@ -53,6 +53,7 @@ app.get('/login', function (req, res) {
 app.get("/supportrequests", async (req, res) => {
   const userId = req.query.user;
   const categoryId = req.query.category;
+
   try {
     let userName = null;
     let userPic = null;
@@ -72,7 +73,7 @@ app.get("/supportrequests", async (req, res) => {
 
     const requests = await db.query(requestsSql, sqlParams);
 
-    // If filtering by user, get user info
+    // Fetch user info if filtering by user
     if (userId && requests.length > 0) {
       const userResult = await db.query("SELECT Username, ProfilePic FROM users WHERE UserID = ?", [userId]);
       if (userResult.length > 0) {
@@ -82,7 +83,7 @@ app.get("/supportrequests", async (req, res) => {
       }
     }
 
-    // If filtering by category, get category name
+    // Fetch category info if filtering by category
     if (categoryId && requests.length > 0) {
       const catResult = await db.query("SELECT CategoryName FROM categories WHERE CategoryID = ?", [categoryId]);
       if (catResult.length > 0) {
@@ -92,6 +93,7 @@ app.get("/supportrequests", async (req, res) => {
 
     const answers = await db.query("SELECT * FROM answers");
 
+    // Group answers by RequestID
     const groupedAnswers = {};
     answers.forEach(answer => {
       if (!groupedAnswers[answer.RequestID]) {
@@ -100,9 +102,17 @@ app.get("/supportrequests", async (req, res) => {
       groupedAnswers[answer.RequestID].push(answer);
     });
 
+    // Map categories for category name display
+    const categories = await db.query("SELECT * FROM categories");
+    const categoryMap = {};
+    categories.forEach(cat => {
+      categoryMap[cat.CategoryID] = cat.CategoryName;
+    });
+
     const combinedData = requests.map(req => ({
       ...req,
-      answers: groupedAnswers[req.RequestID] || []
+      answers: groupedAnswers[req.RequestID] || [],
+      CategoryName: categoryMap[req.CategoryID] || "Uncategorized"
     }));
 
     res.render("supportrequests_combined", {
