@@ -9,8 +9,10 @@ block content
   form(method="POST", action="/supportrequests")
     input(type="text", name="title", placeholder="Title" required)
     textarea(name="description", placeholder="Describe your issue..." required)
+
     select(name="categoryId" required)
       option(value="" disabled selected) -- Select a category --
-      each category in ['1', '2', '3', '4', '5']
-        option(value=category) Category #{category}
+      each category in categories
+        option(value=category.CategoryID)= category.CategoryName
+
     button(type="submit") Post Request

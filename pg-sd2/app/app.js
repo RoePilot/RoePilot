@@ -186,8 +186,19 @@ app.get("/supportrequests", async (req, res) => {
 });
 
 // New Support Request
-app.get("/supportrequests/new", requireLogin, (req, res) => {
-  res.render("new_supportrequest", { user: req.session.user });
+app.get("/supportrequests/new", requireLogin, async (req, res) => {
+  try {
+    const categories = await db.query("SELECT CategoryID, CategoryName FROM categories");
+    res.render("new_supportrequest", {
+      user: req.session.user,
+      categories
+    });
+  } catch (err) {
+    res.render("new_supportrequest", {
+      error: "Error loading categories",
+      categories: []
+    });
+  }
 });
 
 app.post("/supportrequests", requireLogin, async (req, res) => {
