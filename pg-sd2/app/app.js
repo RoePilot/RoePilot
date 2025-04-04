@@ -76,7 +76,7 @@ app.get("/users", async (req, res) => {
 });
 
 // Handle register
-aapp.post("/register", async (req, res) => {
+app.post("/register", async (req, res) => {
   const { username, email, password, universityId } = req.body;
 
   // Create a user instance
