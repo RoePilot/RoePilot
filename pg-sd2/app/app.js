@@ -50,6 +50,14 @@ app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
+app.get("/login", (req, res) => {
+  if (req.session.user) {
+    return res.redirect("/home"); // already logged in
+  }
+  res.render("login");
+});
+
+
 // Register route
 app.get('/register', (req, res) => {
   res.render('register');
