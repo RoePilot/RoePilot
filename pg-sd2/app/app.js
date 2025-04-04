@@ -39,7 +39,7 @@ app.get('/login', function (req, res) {
 
 // Support Requests route
 app.get("/supportrequests", (req, res) => {
-  const sql = "SELECT * FROM support_requests";
+  const sql = "SELECT * FROM supportrequests";
   db.query(sql)
     .then(results => {
       res.render("supportrequests", { supportrequests: results });
