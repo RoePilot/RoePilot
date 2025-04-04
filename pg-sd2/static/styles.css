@@ -10,11 +10,12 @@
 body {
   font-family: 'WinkySans', sans-serif;
   line-height: 1.6;
-  background-color: #fff;
-  color: #222;
+  background-color: #01a16e; /* Full-page green background */
+  color: #ffffff; /* Adjust text color for contrast */
   margin: 0;
   padding: 0;
 }
+
 
 /* ✅ Post box styling */
 .post-box {
