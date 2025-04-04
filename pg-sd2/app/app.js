@@ -192,15 +192,14 @@ app.get("/supportrequests", async (req, res) => {
 // New Support Request
 app.get("/supportrequests/new", requireLogin, async (req, res) => {
   try {
-    const categories = await db.query("SELECT CategoryID, CategoryName FROM categories");
+    const categories = await db.query("SELECT * FROM categories");
     res.render("new_supportrequest", {
       user: req.session.user,
       categories
     });
-  } catch (err) {
+  } catch (error) {
     res.render("new_supportrequest", {
-      error: "Error loading categories",
-      categories: []
+      error: "Error loading form: " + error
     });
   }
 });
