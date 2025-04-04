@@ -37,16 +37,32 @@ app.get('/login', function (req, res) {
   res.render('login');
 });
 
-// Support Requests route
-app.get("/supportrequests", (req, res) => {
-  const sql = "SELECT * FROM supportrequests";
-  db.query(sql)
-    .then(results => {
-      res.render("supportrequests", { supportrequests: results });
-    })
-    .catch(error => {
-      res.render("supportrequests", { error: "Database error: " + error });
+app.get("/supportrequests", async (req, res) => {
+  try {
+    const requests = await db.query("SELECT * FROM support_requests");
+    const answers = await db.query("SELECT * FROM answers");
+
+    // Group answers by their RequestID
+    const groupedAnswers = {};
+    answers.forEach(answer => {
+      if (!groupedAnswers[answer.RequestID]) {
+        groupedAnswers[answer.RequestID] = [];
+      }
+      groupedAnswers[answer.RequestID].push(answer);
     });
+
+    // Attach answers to their respective support request
+    const combinedData = requests.map(req => {
+      return {
+        ...req,
+        answers: groupedAnswers[req.RequestID] || []
+      };
+    });
+
+    res.render("supportrequests_combined", { posts: combinedData });
+  } catch (error) {
+    res.render("supportrequests_combined", { error: "Database error: " + error });
+  }
 });
 
 // Categories route
@@ -61,17 +77,6 @@ app.get("/categories", (req, res) => {
     });
 });
 
-// Answers route
-app.get("/answers", (req, res) => {
-  const sql = "SELECT * FROM answers";
-  db.query(sql)
-    .then(results => {
-      res.render("answers", { answers: results });
-    })
-    .catch(error => {
-      res.render("answers", { error: "Database error: " + error });
-    });
-});
 
 // Upvote route
 app.post("/answers/upvote/:id", (req, res) => {
