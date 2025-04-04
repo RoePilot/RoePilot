@@ -76,11 +76,11 @@ app.get("/users", async (req, res) => {
 
 // Handle register
 app.post("/register", async (req, res) => {
-  const { username, email, password, universityId } = req.body;
-  const user = new User({ email, username });
+  const { Username, Email, PasswordHash, UniversityID } = req.body;
+  const user = new User({ Email, Username });
 
   try {
-    await user.addUser({ username, email, password, universityId });
+    await user.addUser({ Username, Email, PasswordHash, UniversityID });
     res.render("register", { success: "Account created! You can now log in." });
   } catch (err) {
     res.render("register", { error: "Error creating user: " + err });

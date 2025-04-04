@@ -16,10 +16,10 @@ class User {
   async addUser({ username, email, password, universityId }) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const sql = `
-      INSERT INTO users (Username, Email, Password, UniversityID)
+      INSERT INTO users (Username, Email, PasswordHash, UniversityID)
       VALUES (?, ?, ?, ?)
     `;
-    await db.query(sql, [username, email, hashedPassword, universityId]);
+    await db.query(sql, [Username, Email, PasswordHash, UniversityID]);
     return true;
   }
 
