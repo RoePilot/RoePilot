@@ -124,7 +124,11 @@ app.get("/supportrequests", async (req, res) => {
     let userPic = null;
     let pageTitle = "Support Requests";
 
-    let requestsSql = "SELECT * FROM supportrequests";
+    let requestsSql = `
+      SELECT s.*, u.Username
+      FROM supportrequests s
+      JOIN users u ON s.UserID = u.UserID
+    `;
     const sqlParams = [];
 
     if (userId) {
