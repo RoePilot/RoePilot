@@ -38,11 +38,28 @@ app.get('/login', function (req, res) {
 });
 
 app.get("/supportrequests", async (req, res) => {
+  const userId = req.query.user;
   try {
-    const requests = await db.query("SELECT * FROM supportrequests");
+    let userName = null;
+    let userPic = null;
+
+    const requestsSql = userId
+      ? "SELECT * FROM supportrequests WHERE UserID = ?"
+      : "SELECT * FROM supportrequests";
+    const requests = await db.query(requestsSql, userId ? [userId] : []);
+
+    // Fetch user info if filtering
+    if (userId && requests.length > 0) {
+      const userResult = await db.query("SELECT Username, ProfilePic FROM users WHERE UserID = ?", [userId]);
+      if (userResult.length > 0) {
+        userName = userResult[0].Username;
+        userPic = userResult[0].ProfilePic || "default-avatar.png";
+      }
+    }
+
     const answers = await db.query("SELECT * FROM answers");
 
-    // Group answers by their RequestID
+    // Group answers
     const groupedAnswers = {};
     answers.forEach(answer => {
       if (!groupedAnswers[answer.RequestID]) {
@@ -51,15 +68,16 @@ app.get("/supportrequests", async (req, res) => {
       groupedAnswers[answer.RequestID].push(answer);
     });
 
-    // Attach answers to their respective support request
-    const combinedData = requests.map(req => {
-      return {
-        ...req,
-        answers: groupedAnswers[req.RequestID] || []
-      };
-    });
+    const combinedData = requests.map(req => ({
+      ...req,
+      answers: groupedAnswers[req.RequestID] || []
+    }));
 
-    res.render("supportrequests_combined", { posts: combinedData });
+    res.render("supportrequests_combined", {
+      posts: combinedData,
+      filterUserName: userName,
+      filterUserPic: userPic
+    });
   } catch (error) {
     res.render("supportrequests_combined", { error: "Database error: " + error });
   }

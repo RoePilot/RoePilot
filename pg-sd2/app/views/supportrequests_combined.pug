@@ -2,7 +2,9 @@ extends layout
 
 block content
   if filterUserName
-    h1 Support Requests by #{filterUserName}
+    h1
+      img.profile-img(src="/images/" + filterUserPic, alt=filterUserName)
+      |  Support Requests by #{filterUserName}
     a.back-link(href="/supportrequests") ← Back to All Support Requests
   else
     h1 Support Requests
