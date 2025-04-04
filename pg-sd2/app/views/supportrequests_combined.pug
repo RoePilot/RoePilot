@@ -10,6 +10,9 @@ block content
   else
     h1 Support Requests
 
+  form#searchForm(method="get", action="/supportrequests")
+    input#searchInput(type="text", name="search", placeholder="Search support requests...", value=(search || ""))
+
   if filterUserName || pageTitle
     a.back-link(href="/supportrequests") ← Back to All Support Requests
 
@@ -39,3 +42,6 @@ block content
           p.no-comments No answers yet.
   else
     p No support requests available.
+
+  script.
+    liveFilter("searchInput", "post-box");

@@ -29,16 +29,25 @@ app.get("/", (req, res) => {
 });
 
 // Users route
-app.get("/users", (req, res) => {
-  const sql = "SELECT * FROM users";
-  db.query(sql)
-    .then(results => {
-      res.render("users", { users: results });
-    })
-    .catch(error => {
-      res.render("users", { error: "Database error: " + error });
-    });
+app.get("/users", async (req, res) => {
+  const search = req.query.search;
+  let sql = "SELECT * FROM users";
+  let params = [];
+
+  if (search) {
+    sql += " WHERE Username LIKE ? OR Email LIKE ? OR UniversityID LIKE OR CredibilityScore LIKE ?";
+    const wildcard = `%${search}%`;
+    params = [wildcard, wildcard, wildcard];
+  }
+
+  try {
+    const results = await db.query(sql, params);
+    res.render("users", { users: results, search });
+  } catch (error) {
+    res.render("users", { error: "Database error: " + error });
+  }
 });
+
 
 // Register
 app.get('/register', function (req, res) {

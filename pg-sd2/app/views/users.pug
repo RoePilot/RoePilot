@@ -3,6 +3,9 @@ extends layout
 block content
   h1 Users
 
+  form#searchForm(method="get", action="/users")
+    input#searchInput(type="text", name="search", placeholder="Search users...", value=(search || ""))
+
   if error
     p.error #{error}
   else if users && users.length
@@ -17,9 +20,11 @@ block content
           p Registered On: #{user.RegistrationDate}
           a.btn(href="/supportrequests?user=" + user.UserID) View Support Requests
 
-          // Profile picture upload form
           form(method="post", action="/users/" + user.UserID + "/upload", enctype="multipart/form-data")
             input(type="file", name="profilePic", accept="image/*", required)
             button(type="submit") Upload Picture
   else
     p No users available.
+
+  script.
+    liveFilter("searchInput", "user-card");
