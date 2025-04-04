@@ -199,6 +199,27 @@ app.get("/supportrequests", async (req, res) => {
   }
 });
 
+// New requests
+app.get("/supportrequests/new", requireLogin, (req, res) => {
+  res.render("new_supportrequest", { user: req.session.user });
+});
+
+app.post("/supportrequests", requireLogin, async (req, res) => {
+  const { title, description, categoryId } = req.body;
+  const userId = req.session.user.id;
+
+  try {
+    await db.query(
+      "INSERT INTO supportrequests (UserID, Title, Description, CategoryID, PostDate) VALUES (?, ?, ?, ?, NOW())",
+      [userId, title, description, categoryId]
+    );
+    res.redirect("/supportrequests");
+  } catch (error) {
+    res.render("new_supportrequest", { error: "Error submitting request: " + error });
+  }
+});
+
+
 // Categories route
 app.get("/categories", (req, res) => {
   const sql = "SELECT * FROM categories";
@@ -209,6 +230,23 @@ app.get("/categories", (req, res) => {
     .catch(error => {
       res.render("categories", { error: "Database error: " + error });
     });
+});
+
+
+app.post("/answers/:requestId", requireLogin, async (req, res) => {
+  const requestId = req.params.requestId;
+  const userId = req.session.user.id;
+  const answerText = req.body.answerText;
+
+  try {
+    await db.query(
+      "INSERT INTO answers (RequestID, UserID, AnswerText, PostDate, NumOfUpvote) VALUES (?, ?, ?, NOW(), 0)",
+      [requestId, userId, answerText]
+    );
+    res.redirect("/supportrequests");
+  } catch (error) {
+    res.status(500).send("Error submitting answer: " + error);
+  }
 });
 
 

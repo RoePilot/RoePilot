@@ -10,6 +10,11 @@ block content
   else
     h1 Support Requests
 
+  // 🔗 New Support Request Button
+  if user
+    a.btn(href="/supportrequests/new") + Ask a New Question
+
+  // 🔍 Search Bar
   form#searchForm(method="get", action="/supportrequests")
     input#searchInput(type="text", name="search", placeholder="Search support requests...", value=(search || ""))
 
@@ -26,6 +31,7 @@ block content
           p.small Posted by User #{post.UserID} on #{post.PostDate}
           if post.CategoryName
             p.small Category: #{post.CategoryName}
+
         .post-body
           p #{post.Description}
 
@@ -40,8 +46,37 @@ block content
                   button(type="submit") Upvote
         else
           p.no-comments No answers yet.
+
+        // ✍️ New Answer Form
+        if user
+          form(method="POST", action="/answers/" + post.RequestID)
+            textarea(name="answerText", placeholder="Write your answer..." required)
+            button(type="submit") Submit Answer
+
   else
     p No support requests available.
 
+  // 🔍 Live filtering script
   script.
+    function liveFilter(inputId, className) {
+      const input = document.getElementById(inputId);
+      input.addEventListener("input", () => {
+        const filter = input.value.toLowerCase();
+        const items = document.getElementsByClassName(className);
+        for (let item of items) {
+          const text = item.innerText.toLowerCase();
+          if (text.includes(filter)) {
+            item.style.display = "";
+            const regex = new RegExp(filter, 'gi');
+            item.innerHTML = item.innerHTML.replace(/<mark>|<\/mark>/g, '').replace(regex, match => `<mark>${match}</mark>`);
+          } else {
+            item.style.display = "none";
+          }
+        }
+      });
+
+      input.form.addEventListener("submit", e => {
+        e.preventDefault();
+      });
+    }
     liveFilter("searchInput", "post-box");
