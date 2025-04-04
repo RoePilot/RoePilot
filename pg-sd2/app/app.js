@@ -6,7 +6,7 @@ const session = require("express-session");
 const answerModel = require('./models/answerModel');
 const multer = require("multer");
 
-// Set the sessions
+// Middleware: form parser & sessions
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'secretkeysdfjsflyoifasd',
@@ -15,15 +15,26 @@ app.use(session({
   cookie: { secure: false }
 }));
 
+// Configure file uploads for profile pictures
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./static/images"); // saves to public images directory
+    cb(null, "./static/images");
   },
   filename: function (req, file, cb) {
     const uniqueName = Date.now() + "-" + file.originalname;
     cb(null, uniqueName);
   }
 });
+const upload = multer({ storage: storage });
+
+// Serve static files
+app.use(express.static("static"));
+
+// Set Pug as the view engine
+app.set("view engine", "pug");
+app.set("views", "./app/views");
+
+// Middleware: protect routes
 function requireLogin(req, res, next) {
   if (!req.session.user) {
     return res.redirect("/login");
@@ -31,81 +42,24 @@ function requireLogin(req, res, next) {
   next();
 }
 
-const upload = multer({ storage: storage });
-
-app.use(express.static("static"));
-
-// Set up the Pug templating engine
-app.set("view engine", "pug");
-app.set("views", "./app/views");
-
-// Home route
+// Home
 app.get("/home", requireLogin, (req, res) => {
   res.render("index", { user: req.session.user });
 });
 
-
-// Login route
+// Redirect root to login
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
+// Login
 app.get("/login", (req, res) => {
   if (req.session.user) {
-    return res.redirect("/home"); // already logged in
+    return res.redirect("/home");
   }
   res.render("login");
 });
 
-
-// Register route
-app.get('/register', (req, res) => {
-  res.render('register');
-});
-
-// Users route
-app.get("/users", async (req, res) => {
-  const search = req.query.search;
-  let sql = "SELECT * FROM users";
-  let params = [];
-
-  if (search) {
-    sql += " WHERE Username LIKE ? OR Email LIKE ? OR UniversityID LIKE OR CredibilityScore LIKE ?";
-    const wildcard = `%${search}%`;
-    params = [wildcard, wildcard, wildcard];
-  }
-
-  try {
-    const results = await db.query(sql, params);
-    res.render("users", { users: results, search });
-  } catch (error) {
-    res.render("users", { error: "Database error: " + error });
-  }
-});
-
-// Handle register
-app.post("/register", async (req, res) => {
-  const { username, email, password, universityId } = req.body;
-
-  // Create a user instance
-  const user = new User({ email, username });
-
-  try {
-    await user.addUser({
-      username,
-      email,
-      password,
-      universityId
-    });
-
-    res.render("register", { success: "Account created! You can now log in." });
-  } catch (err) {
-    console.error(err);
-    res.render("register", { error: "Error creating user: " + err });
-  }
-});
-
-// Handle login
 app.post("/login", async (req, res) => {
   const { identifier, password } = req.body;
   const user = new User({});
@@ -116,13 +70,51 @@ app.post("/login", async (req, res) => {
       id: authUser.UserID,
       username: authUser.Username
     };
-    return res.redirect("/home");  // ✅ <-- must redirect here!
+    return res.redirect("/home");
   } else {
     res.render("login", { error: "Invalid credentials." });
   }
 });
 
+// Register
+app.get('/register', (req, res) => {
+  res.render('register');
+});
 
+app.post("/register", async (req, res) => {
+  const { username, email, password, universityId } = req.body;
+  const user = new User({ email, username });
+
+  try {
+    await user.addUser({ username, email, password, universityId });
+    res.render("register", { success: "Account created! You can now log in." });
+  } catch (err) {
+    console.error(err);
+    res.render("register", { error: "Error creating user: " + err });
+  }
+});
+
+// Users
+app.get("/users", async (req, res) => {
+  const search = req.query.search;
+  let sql = "SELECT * FROM users";
+  let params = [];
+
+  if (search) {
+    sql += " WHERE Username LIKE ? OR Email LIKE ? OR UniversityID LIKE ? OR CredibilityScore LIKE ?";
+    const wildcard = `%${search}%`;
+    params = [wildcard, wildcard, wildcard, wildcard];
+  }
+
+  try {
+    const results = await db.query(sql, params);
+    res.render("users", { users: results, search });
+  } catch (error) {
+    res.render("users", { error: "Database error: " + error });
+  }
+});
+
+// Support Requests View
 app.get("/supportrequests", async (req, res) => {
   const userId = req.query.user;
   const categoryId = req.query.category;
@@ -135,7 +127,6 @@ app.get("/supportrequests", async (req, res) => {
     let requestsSql = "SELECT * FROM supportrequests";
     const sqlParams = [];
 
-    // Add filtering
     if (userId) {
       requestsSql += " WHERE UserID = ?";
       sqlParams.push(userId);
@@ -146,7 +137,6 @@ app.get("/supportrequests", async (req, res) => {
 
     const requests = await db.query(requestsSql, sqlParams);
 
-    // Fetch user info if filtering by user
     if (userId && requests.length > 0) {
       const userResult = await db.query("SELECT Username, ProfilePic FROM users WHERE UserID = ?", [userId]);
       if (userResult.length > 0) {
@@ -156,7 +146,6 @@ app.get("/supportrequests", async (req, res) => {
       }
     }
 
-    // Fetch category info if filtering by category
     if (categoryId && requests.length > 0) {
       const catResult = await db.query("SELECT CategoryName FROM categories WHERE CategoryID = ?", [categoryId]);
       if (catResult.length > 0) {
@@ -165,8 +154,6 @@ app.get("/supportrequests", async (req, res) => {
     }
 
     const answers = await db.query("SELECT * FROM answers");
-
-    // Group answers by RequestID
     const groupedAnswers = {};
     answers.forEach(answer => {
       if (!groupedAnswers[answer.RequestID]) {
@@ -175,7 +162,6 @@ app.get("/supportrequests", async (req, res) => {
       groupedAnswers[answer.RequestID].push(answer);
     });
 
-    // Map categories for category name display
     const categories = await db.query("SELECT * FROM categories");
     const categoryMap = {};
     categories.forEach(cat => {
@@ -199,7 +185,7 @@ app.get("/supportrequests", async (req, res) => {
   }
 });
 
-// New requests
+// New Support Request
 app.get("/supportrequests/new", requireLogin, (req, res) => {
   res.render("new_supportrequest", { user: req.session.user });
 });
@@ -219,20 +205,7 @@ app.post("/supportrequests", requireLogin, async (req, res) => {
   }
 });
 
-
-// Categories route
-app.get("/categories", (req, res) => {
-  const sql = "SELECT * FROM categories";
-  db.query(sql)
-    .then(results => {
-      res.render("categories", { categories: results });
-    })
-    .catch(error => {
-      res.render("categories", { error: "Database error: " + error });
-    });
-});
-
-
+// Post an Answer
 app.post("/answers/:requestId", requireLogin, async (req, res) => {
   const requestId = req.params.requestId;
   const userId = req.session.user.id;
@@ -249,8 +222,7 @@ app.post("/answers/:requestId", requireLogin, async (req, res) => {
   }
 });
 
-
-// Upvote route
+// Upvote Answer
 app.post("/answers/upvote/:id", (req, res) => {
   const answerId = req.params.id;
   answerModel.upvoteAnswer(answerId)
@@ -261,7 +233,20 @@ app.post("/answers/upvote/:id", (req, res) => {
       res.status(500).send("Error upvoting answer: " + error);
     });
 });
-// profilepic upload
+
+// Categories
+app.get("/categories", (req, res) => {
+  const sql = "SELECT * FROM categories";
+  db.query(sql)
+    .then(results => {
+      res.render("categories", { categories: results });
+    })
+    .catch(error => {
+      res.render("categories", { error: "Database error: " + error });
+    });
+});
+
+// Profile Picture Upload
 app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
   const userId = req.params.id;
   const fileName = req.file.filename;
@@ -275,14 +260,19 @@ app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
   }
 });
 
-// Logout route
+// Logout
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
   });
 });
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).send("Page not found");
+});
 
+// Start server
 app.listen(3000, () => {
   console.log("Server running at http://127.0.0.1:3000/");
 });
