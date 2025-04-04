@@ -99,11 +99,12 @@ app.post("/login", async (req, res) => {
       id: authUser.UserID,
       username: authUser.Username
     };
-    res.redirect("/"); // or user dashboard
+    return res.redirect("/home");  // ✅ <-- must redirect here!
   } else {
     res.render("login", { error: "Invalid credentials." });
   }
 });
+
 
 app.get("/supportrequests", async (req, res) => {
   const userId = req.query.user;
