@@ -132,10 +132,10 @@ app.get("/supportrequests", async (req, res) => {
     const sqlParams = [];
 
     if (userId) {
-      requestsSql += " WHERE UserID = ?";
+      requestsSql += " WHERE s.UserID = ?";
       sqlParams.push(userId);
     } else if (categoryId) {
-      requestsSql += " WHERE CategoryID = ?";
+      requestsSql += " WHERE s.CategoryID = ?";
       sqlParams.push(categoryId);
     }
 
@@ -153,7 +153,7 @@ app.get("/supportrequests", async (req, res) => {
     if (categoryId && requests.length > 0) {
       const catResult = await db.query("SELECT CategoryName FROM categories WHERE CategoryID = ?", [categoryId]);
       if (catResult.length > 0) {
-        pageTitle = `Support Requests in "${catResult[0].CategoryName}"`;
+        pageTitle = `Support Requests in \"${catResult[0].CategoryName}\"`;
       }
     }
 
@@ -182,7 +182,8 @@ app.get("/supportrequests", async (req, res) => {
       posts: combinedData,
       filterUserName: userName,
       filterUserPic: userPic,
-      pageTitle
+      pageTitle,
+      user: req.session.user
     });
   } catch (error) {
     res.render("supportrequests_combined", { error: "Database error: " + error });
