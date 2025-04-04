@@ -24,6 +24,12 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   }
 });
+function requireLogin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  next();
+}
 
 const upload = multer({ storage: storage });
 
@@ -34,9 +40,10 @@ app.set("view engine", "pug");
 app.set("views", "./app/views");
 
 // Home route
-app.get("/", (req, res) => {
-  res.render("index");
+app.get("/", requireLogin, (req, res) => {
+  res.render("index", { user: req.session.user });
 });
+
 
 // Users route
 app.get("/users", async (req, res) => {
