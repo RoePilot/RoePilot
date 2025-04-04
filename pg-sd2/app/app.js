@@ -40,8 +40,8 @@ app.set("view engine", "pug");
 app.set("views", "./app/views");
 
 // Home route
-app.get("/", requireLogin, (req, res) => {
-  res.render("index", { user: req.session.user });
+app.get("/", (req, res) => {
+  res.redirect("/login");
 });
 
 // Login route

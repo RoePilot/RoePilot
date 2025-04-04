@@ -1,15 +1,21 @@
-doctype html
-html
-  head
-    title Register
-  body
+extends layout
+
+block content
+  .form-container
+    h1 Register
+
     if error
-      p(style="color: red")= error
+      p.error #{error}
     if success
-      p(style="color: green")= success
+      p.success #{success}
+
     form(action="/register" method="POST")
-      input(type="text" name="username" placeholder="Username" required)
-      input(type="email" name="email" placeholder="Email" required)
+      input(type="text", name="username", placeholder="Username" required)
+      input(type="email", name="email", placeholder="Email" required)
       input(type="text" name="universityId" placeholder="University ID" required)
       input(type="password" name="password" placeholder="Password" required)
       button(type="submit") Register
+
+    p.small-text
+      | Already have an account?
+      a(href="/login") Log in here
