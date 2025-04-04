@@ -237,6 +237,14 @@ app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
   }
 });
 
+// Logout route
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
+});
+
+
 app.listen(3000, () => {
   console.log("Server running at http://127.0.0.1:3000/");
 });
