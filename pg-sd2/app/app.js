@@ -38,7 +38,7 @@ app.get('/login', function (req, res) {
 });
 
 // Support Requests route
-app.get("/understoodsupportrequests", (req, res) => {
+app.get("/supportrequests", (req, res) => {
   const sql = "SELECT * FROM support_requests";
   db.query(sql)
     .then(results => {
