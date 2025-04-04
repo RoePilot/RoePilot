@@ -19,14 +19,19 @@ class User {
       INSERT INTO users (Username, Email, PasswordHash, UniversityID)
       VALUES (?, ?, ?, ?)
     `;
-    await db.query(sql, [Username, Email, PasswordHash, UniversityID]);
+    await db.query(sql, [username, email, hashedPassword, universityId]);
     return true;
   }
 
   async authenticate(identifier, submittedPassword) {
     const user = await this.getByUsernameOrEmail(identifier);
-    if (!user) return false;
-    const match = await bcrypt.compare(submittedPassword, user.Password);
+    
+    // ✅ Check that the password hash actually exists
+    if (!user || !user.PasswordHash) {
+      return false;
+    }
+
+    const match = await bcrypt.compare(submittedPassword, user.PasswordHash);
     return match ? user : false;
   }
 }
