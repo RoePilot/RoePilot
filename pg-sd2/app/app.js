@@ -39,7 +39,7 @@ app.get('/login', function (req, res) {
 
 app.get("/supportrequests", async (req, res) => {
   try {
-    const requests = await db.query("SELECT * FROM support_requests");
+    const requests = await db.query("SELECT * FROM supportrequests");
     const answers = await db.query("SELECT * FROM answers");
 
     // Group answers by their RequestID
