@@ -2,6 +2,7 @@ extends layout
 
 block content
   h1 Categories
+
   if error
     p.error #{error}
   else if categories && categories.length
@@ -15,7 +16,8 @@ block content
         each category in categories
           tr
             td #{category.CategoryID}
-            td #{category.CategoryName}
+            td
+              a(href="/supportrequests?category=" + category.CategoryID) #{category.CategoryName}
             td #{category.Description}
   else
     p No categories available.
