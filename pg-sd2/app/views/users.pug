@@ -16,5 +16,10 @@ block content
           p Credibility Score: #{user.CredibilityScore}
           p Registered On: #{user.RegistrationDate}
           a.btn(href="/supportrequests?user=" + user.UserID) View Support Requests
+
+          // Profile picture upload form
+          form(method="post", action="/users/" + user.UserID + "/upload", enctype="multipart/form-data")
+            input(type="file", name="profilePic", accept="image/*", required)
+            button(type="submit") Upload Picture
   else
     p No users available.

@@ -3,6 +3,19 @@ const db = require("./services/db");
 const app = express();
 const { User } = require("./models/user");
 const answerModel = require('./models/answerModel');
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./static/images"); // saves to public images directory
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 app.use(express.static("static"));
 
@@ -106,6 +119,19 @@ app.post("/answers/upvote/:id", (req, res) => {
     .catch(error => {
       res.status(500).send("Error upvoting answer: " + error);
     });
+});
+// profilepic upload
+app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
+  const userId = req.params.id;
+  const fileName = req.file.filename;
+
+  try {
+    const sql = "UPDATE users SET ProfilePic = ? WHERE UserID = ?";
+    await db.query(sql, [fileName, userId]);
+    res.redirect("/users");
+  } catch (error) {
+    res.status(500).send("Error uploading profile picture: " + error);
+  }
 });
 
 app.listen(3000, () => {
