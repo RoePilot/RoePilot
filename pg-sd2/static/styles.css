@@ -1,7 +1,7 @@
 /* ✅ Load custom WinkySans font */
 @font-face {
   font-family: 'WinkySans';
-  src: url('/fonts/WinkySans-VariableFont_wght.ttf') format('truetype');
+  src: url('/fonts/GenSenMaruGothicTW-Bold.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
 }
