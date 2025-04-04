@@ -52,27 +52,46 @@ app.get('/login', function (req, res) {
 
 app.get("/supportrequests", async (req, res) => {
   const userId = req.query.user;
+  const categoryId = req.query.category;
   try {
     let userName = null;
     let userPic = null;
+    let pageTitle = "Support Requests";
 
-    const requestsSql = userId
-      ? "SELECT * FROM supportrequests WHERE UserID = ?"
-      : "SELECT * FROM supportrequests";
-    const requests = await db.query(requestsSql, userId ? [userId] : []);
+    let requestsSql = "SELECT * FROM supportrequests";
+    const sqlParams = [];
 
-    // Fetch user info if filtering
+    // Add filtering
+    if (userId) {
+      requestsSql += " WHERE UserID = ?";
+      sqlParams.push(userId);
+    } else if (categoryId) {
+      requestsSql += " WHERE CategoryID = ?";
+      sqlParams.push(categoryId);
+    }
+
+    const requests = await db.query(requestsSql, sqlParams);
+
+    // If filtering by user, get user info
     if (userId && requests.length > 0) {
       const userResult = await db.query("SELECT Username, ProfilePic FROM users WHERE UserID = ?", [userId]);
       if (userResult.length > 0) {
         userName = userResult[0].Username;
         userPic = userResult[0].ProfilePic || "default-avatar.png";
+        pageTitle = `Support Requests by ${userName}`;
+      }
+    }
+
+    // If filtering by category, get category name
+    if (categoryId && requests.length > 0) {
+      const catResult = await db.query("SELECT CategoryName FROM categories WHERE CategoryID = ?", [categoryId]);
+      if (catResult.length > 0) {
+        pageTitle = `Support Requests in "${catResult[0].CategoryName}"`;
       }
     }
 
     const answers = await db.query("SELECT * FROM answers");
 
-    // Group answers
     const groupedAnswers = {};
     answers.forEach(answer => {
       if (!groupedAnswers[answer.RequestID]) {
@@ -89,7 +108,8 @@ app.get("/supportrequests", async (req, res) => {
     res.render("supportrequests_combined", {
       posts: combinedData,
       filterUserName: userName,
-      filterUserPic: userPic
+      filterUserPic: userPic,
+      pageTitle
     });
   } catch (error) {
     res.render("supportrequests_combined", { error: "Database error: " + error });
