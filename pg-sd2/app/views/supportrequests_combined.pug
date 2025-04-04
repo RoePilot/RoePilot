@@ -1,13 +1,35 @@
 extends layout
 
 block content
-  if pageTitle
-    h1 #{pageTitle}
+  if filterUserName
+    h1
+      img.profile-img(src="/images/" + filterUserPic, alt=filterUserName)
+      |  Support Requests by #{filterUserName}
+    a.back-link(href="/supportrequests") ← Back to All Support Requests
   else
     h1 Support Requests
 
-  if filterUserName
-    img.profile-img(src="/images/" + filterUserPic, alt=filterUserName)
+  if error
+    p.error #{error}
+  else if posts && posts.length
+    each post in posts
+      .post-box
+        .post-header
+          h2 #{post.Title}
+          p.small Posted by User #{post.UserID} on #{post.PostDate}
+        .post-body
+          p #{post.Description}
 
-  if filterUserName || pageTitle.includes("in")
-    a.back-link(href="/supportrequests") ← Back to All Support Requests
+        if post.answers.length
+          .answer-section
+            h3 Answers
+            each answer in post.answers
+              .answer-box
+                p #{answer.AnswerText}
+                p.small Posted on #{answer.PostDate}, Upvotes: #{answer.NumOfUpvote}
+                form(action="/answers/upvote/" + answer.AnswerID, method="post")
+                  button(type="submit") Upvote
+        else
+          p.no-comments No answers yet.
+  else
+    p No support requests available.
