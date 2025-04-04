@@ -1,31 +1,40 @@
-.post {
-    border: 1px solid #ddd;
-    padding: 1em;
-    margin-bottom: 2em;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
-  .post-header h2 {
-    margin: 0 0 0.5em 0;
-  }
-  
-  .comments {
-    margin-top: 1em;
-    padding-left: 1em;
-    border-left: 3px solid #ccc;
-  }
-  
-  .comment {
-    margin-bottom: 1em;
-  }
-  
-  .small {
-    font-size: 0.9em;
-    color: #666;
-  }
-  
-  .no-comments {
-    color: #aaa;
-  }
-  
+.post-box {
+  border: 2px solid #ccc;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  background-color: #fdfdfd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.answer-section {
+  margin-top: 1rem;
+  padding-left: 1rem;
+  border-left: 3px solid #aaa;
+}
+
+.answer-box {
+  background-color: #f0f0f5;
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
