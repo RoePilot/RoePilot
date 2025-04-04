@@ -1,23 +1,16 @@
 extends layout
 
 block content
-  h1 Categories
+  h1 Support Categories
 
   if error
     p.error #{error}
   else if categories && categories.length
-    table(border="1")
-      thead
-        tr
-          th CategoryID
-          th CategoryName
-          th Description
-      tbody
-        each category in categories
-          tr
-            td #{category.CategoryID}
-            td
-              a(href="/supportrequests?category=" + category.CategoryID) #{category.CategoryName}
-            td #{category.Description}
+    .category-grid
+      each category in categories
+        .category-card
+          h2 #{category.CategoryName}
+          p #{category.Description}
+          a.btn(href="/supportrequests?category=" + category.CategoryID) View Support Requests
   else
     p No categories available.

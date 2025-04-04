@@ -1,13 +1,17 @@
 extends layout
 
 block content
-  if filterUserName
+  if pageTitle
+    h1 #{pageTitle}
+  else if filterUserName
     h1
       img.profile-img(src="/images/" + filterUserPic, alt=filterUserName)
       |  Support Requests by #{filterUserName}
-    a.back-link(href="/supportrequests") ← Back to All Support Requests
   else
     h1 Support Requests
+
+  if filterUserName || pageTitle
+    a.back-link(href="/supportrequests") ← Back to All Support Requests
 
   if error
     p.error #{error}
@@ -17,6 +21,8 @@ block content
         .post-header
           h2 #{post.Title}
           p.small Posted by User #{post.UserID} on #{post.PostDate}
+          if post.CategoryName
+            p.small Category: #{post.CategoryName}
         .post-body
           p #{post.Description}
 
