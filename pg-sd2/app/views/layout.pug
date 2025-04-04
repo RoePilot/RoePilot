@@ -19,6 +19,7 @@ html
 
       function liveFilter(inputId, itemClass) {
         const input = document.getElementById(inputId);
+        if (!input) return;
         input.addEventListener('input', () => {
           const value = input.value.trim().toLowerCase();
           const items = document.querySelectorAll(`.${itemClass}`);
@@ -41,3 +42,4 @@ html
       a(href="/supportrequests/new") Ask a Question |
       a(href="/users") Users |
       a(href="/logout") Logout
+    block content
