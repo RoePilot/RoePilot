@@ -1,10 +1,12 @@
-html 
-    head    
-        title Title here...
-    body
-       h1 Heading here...
-       p first paragraph xxx
-// Create a route for root
-app.get("/", function(req, res) {
-    res.render("index");
-});
+extends layout
+
+block content
+  h1 Welcome to Our Technical Support Website
+
+  if user
+    p Hello, #{user.username}! Use the navigation links above to browse different sections.
+  else
+    p Please log in or register to access the technical support features.
+    p Use the navigation links above to browse different sections.
+
+  img(src="/images/R.png", alt="RoePilot", width="600")

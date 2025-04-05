@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  h1 Users
+
+  form#searchForm(method="get", action="/users")
+    input#searchInput(type="text", name="search", placeholder="Search users...", value=(search || ""))
+
+  if error
+    p.error #{error}
+  else if users && users.length
+    .user-grid
+      each user in users
+        .user-card
+          img.profile-img(src=(user.ProfilePic ? "/images/" + user.ProfilePic : "/images/default-avatar.png"), alt="Profile Picture")
+          h2 #{user.Username}
+          p Email: #{user.Email}
+          p University ID: #{user.UniversityID}
+          p Credibility Score: #{user.CredibilityScore}
+          p Registered On: #{user.RegistrationDate}
+          a.btn(href="/supportrequests?user=" + user.UserID) View Support Requests
+
+          form(method="post", action="/users/" + user.UserID + "/upload", enctype="multipart/form-data")
+            input(type="file", name="profilePic", accept="image/*", required)
+            button(type="submit") Upload Picture
+  else
+    p No users available.
+
+  script.
+    liveFilter("searchInput", "user-card");

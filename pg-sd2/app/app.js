@@ -1,83 +1,293 @@
 const express = require("express");
 const db = require("./services/db");
-
 const app = express();
-app.use(express.static("static"));
+const { User } = require("./models/user");
+const session = require("express-session");
+const answerModel = require('./models/answerModel');
+const multer = require("multer");
 
-// Use the Pug templating engine
-app.set('view engine', 'pug');
-app.set('views', './app/views');
+// Middleware: form parser & sessions
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: 'secretkeysdfjsflyoifasd',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
 
-// EXERCISE 1: Modify root route to display "Hello [Your Name]"
-app.get("/", function(req, res) {
-    res.send("Hello [Your Name]!");
+// Configure file uploads for profile pictures
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./static/images");
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  }
 });
-
-// EXERCISE 2: Create a new route '/roehampton'
-app.get("/roehampton", function(req, res) {
-    console.log(req.url);
-    res.send("Hello Roehampton!");
-});
-
-// EXERCISE 4: Add logic to return first 3 letters of request path
-app.get("/roehampton", function(req, res) {
-    console.log(req.url);
-    let path = req.url;
-    res.send(path.substring(1, 4));
-});
-
-// Dynamic route for '/hello/:name'
-app.get("/hello/:name", function(req, res) {
-    console.log(req.params);
-    res.send("Hello " + req.params.name);
-});
-
-// EXERCISE 2: Dynamic route '/user/:id'
-app.get("/user/:id", function(req, res) {
-    res.send("User ID: " + req.params.id);
-});
-
-// EXERCISE 3: Dynamic route '/student/:name/:id'
-app.get("/student/:name/:id", function(req, res) {
-    res.send(`<h1>Student Information</h1><p>Name: ${req.params.name}</p><p>ID: ${req.params.id}</p>`);
-});
-
-// EXERCISE 5: Modify '/db_test/:id' route to query specific user from database
-app.get("/db_test/:id", function(req, res) {
-    let sql = `SELECT name FROM test_table WHERE id = ?`;
-    db.query(sql, [req.params.id]).then(results => {
-        if (results.length > 0) {
-            res.send(`<h1>Result</h1><p>Name: ${results[0].name}</p>`);
-        } else {
-            res.send("No record found.");
-        }
-    }).catch(error => {
-        res.send("Database error: " + error);
-    });
-});
-
-// Additional Task 1: Reverse "roehampton"
-app.get("/roehampton/reverse", function(req, res) {
-    let reversed = "roehampton".split("").reverse().join("");
-    res.send(`<h1>Reversed: ${reversed}</h1>`);
-});
-
-// Additional Task 2: Create a dynamic route '/number/:n' to print numbers in a table
-app.get("/number/:n", function(req, res) {
-    let n = parseInt(req.params.n);
-    if (isNaN(n) || n < 0) {
-        return res.send("Invalid number.");
-    }
-    let tableRows = "";
-    for (let i = 0; i <= n; i++) {
-        tableRows += `<tr><td>${i}</td></tr>`;
-    }
-    res.send(`<h1>Numbers from 0 to ${n}</h1><table border='1'>${tableRows}</table>`);
-});
+const upload = multer({ storage: storage });
 
 // Serve static files
 app.use(express.static("static"));
 
-app.listen(3000, function() {
-    console.log("Server running at http://127.0.0.1:3000/");
+// Set Pug as the view engine
+app.set("view engine", "pug");
+app.set("views", "./app/views");
+
+// Middleware: protect routes
+function requireLogin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  next();
+}
+
+// Home
+app.get("/home", requireLogin, (req, res) => {
+  res.render("index", { user: req.session.user });
+});
+
+// Redirect root to login
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
+
+// Login
+app.get("/login", (req, res) => {
+  if (req.session.user) {
+    return res.redirect("/home");
+  }
+  res.render("login");
+});
+
+app.post("/login", async (req, res) => {
+  const { identifier, password } = req.body;
+  const user = new User({});
+  const authUser = await user.authenticate(identifier, password);
+
+  if (authUser) {
+    req.session.user = {
+      id: authUser.UserID,
+      username: authUser.Username
+    };
+    return res.redirect("/home");
+  } else {
+    res.render("login", { error: "Invalid credentials." });
+  }
+});
+
+// Register
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
+app.post("/register", async (req, res) => {
+  const { username, email, password, universityId } = req.body;
+  const user = new User({ email, username });
+
+  try {
+    await user.addUser({ username, email, password, universityId });
+    res.render("register", { success: "Account created! You can now log in." });
+  } catch (err) {
+    console.error(err);
+    res.render("register", { error: "Error creating user: " + err });
+  }
+});
+
+// Users
+app.get("/users", async (req, res) => {
+  const search = req.query.search;
+  let sql = "SELECT * FROM users";
+  let params = [];
+
+  if (search) {
+    sql += " WHERE Username LIKE ? OR Email LIKE ? OR UniversityID LIKE ? OR CredibilityScore LIKE ?";
+    const wildcard = `%${search}%`;
+    params = [wildcard, wildcard, wildcard, wildcard];
+  }
+
+  try {
+    const results = await db.query(sql, params);
+    res.render("users", { users: results, search });
+  } catch (error) {
+    res.render("users", { error: "Database error: " + error });
+  }
+});
+
+// Support Requests View
+app.get("/supportrequests", async (req, res) => {
+  const userId = req.query.user;
+  const categoryId = req.query.category;
+
+  try {
+    let userName = null;
+    let userPic = null;
+    let pageTitle = "Support Requests";
+
+    let requestsSql = `
+      SELECT s.*, u.Username
+      FROM supportrequests s
+      JOIN users u ON s.UserID = u.UserID
+    `;
+    const sqlParams = [];
+
+    if (userId) {
+      requestsSql += " WHERE s.UserID = ?";
+      sqlParams.push(userId);
+    } else if (categoryId) {
+      requestsSql += " WHERE s.CategoryID = ?";
+      sqlParams.push(categoryId);
+    }
+
+    const requests = await db.query(requestsSql, sqlParams);
+
+    if (userId && requests.length > 0) {
+      const userResult = await db.query("SELECT Username, ProfilePic FROM users WHERE UserID = ?", [userId]);
+      if (userResult.length > 0) {
+        userName = userResult[0].Username;
+        userPic = userResult[0].ProfilePic || "default-avatar.png";
+        pageTitle = `Support Requests by ${userName}`;
+      }
+    }
+
+    if (categoryId && requests.length > 0) {
+      const catResult = await db.query("SELECT CategoryName FROM categories WHERE CategoryID = ?", [categoryId]);
+      if (catResult.length > 0) {
+        pageTitle = `Support Requests in \"${catResult[0].CategoryName}\"`;
+      }
+    }
+
+    const answers = await db.query("SELECT * FROM answers");
+    const groupedAnswers = {};
+    answers.forEach(answer => {
+      if (!groupedAnswers[answer.RequestID]) {
+        groupedAnswers[answer.RequestID] = [];
+      }
+      groupedAnswers[answer.RequestID].push(answer);
+    });
+
+    const categories = await db.query("SELECT * FROM categories");
+    const categoryMap = {};
+    categories.forEach(cat => {
+      categoryMap[cat.CategoryID] = cat.CategoryName;
+    });
+
+    const combinedData = requests.map(req => ({
+      ...req,
+      answers: groupedAnswers[req.RequestID] || [],
+      CategoryName: categoryMap[req.CategoryID] || "Uncategorized"
+    }));
+
+    res.render("supportrequests_combined", {
+      posts: combinedData,
+      filterUserName: userName,
+      filterUserPic: userPic,
+      pageTitle,
+      user: req.session.user
+    });
+  } catch (error) {
+    res.render("supportrequests_combined", { error: "Database error: " + error });
+  }
+});
+
+// New Support Request
+app.get("/supportrequests/new", requireLogin, async (req, res) => {
+  try {
+    const categories = await db.query("SELECT * FROM categories");
+    res.render("new_supportrequest", {
+      user: req.session.user,
+      categories
+    });
+  } catch (error) {
+    res.render("new_supportrequest", {
+      error: "Error loading form: " + error
+    });
+  }
+});
+
+app.post("/supportrequests", requireLogin, async (req, res) => {
+  const { title, description, categoryId } = req.body;
+  const userId = req.session.user.id;
+
+  try {
+    await db.query(
+      "INSERT INTO supportrequests (UserID, Title, Description, CategoryID, PostDate) VALUES (?, ?, ?, ?, NOW())",
+      [userId, title, description, categoryId]
+    );
+    res.redirect("/supportrequests");
+  } catch (error) {
+    res.render("new_supportrequest", { error: "Error submitting request: " + error });
+  }
+});
+
+// Post an Answer
+app.post("/answers/:requestId", requireLogin, async (req, res) => {
+  const requestId = req.params.requestId;
+  const userId = req.session.user.id;
+  const answerText = req.body.answerText;
+
+  try {
+    await db.query(
+      "INSERT INTO answers (RequestID, UserID, AnswerText, PostDate, NumOfUpvote) VALUES (?, ?, ?, NOW(), 0)",
+      [requestId, userId, answerText]
+    );
+    res.redirect("/supportrequests");
+  } catch (error) {
+    res.status(500).send("Error submitting answer: " + error);
+  }
+});
+
+// Upvote Answer
+app.post("/answers/upvote/:id", (req, res) => {
+  const answerId = req.params.id;
+  answerModel.upvoteAnswer(answerId)
+    .then(() => {
+      res.redirect("/supportrequests");
+    })
+    .catch(error => {
+      res.status(500).send("Error upvoting answer: " + error);
+    });
+});
+
+// Categories
+app.get("/categories", (req, res) => {
+  const sql = "SELECT * FROM categories";
+  db.query(sql)
+    .then(results => {
+      res.render("categories", { categories: results });
+    })
+    .catch(error => {
+      res.render("categories", { error: "Database error: " + error });
+    });
+});
+
+// Profile Picture Upload
+app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
+  const userId = req.params.id;
+  const fileName = req.file.filename;
+
+  try {
+    const sql = "UPDATE users SET ProfilePic = ? WHERE UserID = ?";
+    await db.query(sql, [fileName, userId]);
+    res.redirect("/users");
+  } catch (error) {
+    res.status(500).send("Error uploading profile picture: " + error);
+  }
+});
+
+// Logout
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).send("Page not found");
+});
+
+// Start server
+app.listen(3000, () => {
+  console.log("Server running at http://127.0.0.1:3000/");
 });
