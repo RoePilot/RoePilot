@@ -40,7 +40,7 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 0.5rem 0.5rem; /* Reduced height */
+  padding: 0.25rem 0.25rem; /* Reduced height */
   background-color: #ffffff;
   color: #000000;
   flex-wrap: wrap;
@@ -62,7 +62,7 @@ body {
   background: none;
   box-shadow: none;
   border: none;
-  height: 16px;
+  height: 12px;
   width: auto;
   margin-left: 0.15rem;
   vertical-align: middle;
