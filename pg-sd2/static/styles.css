@@ -16,16 +16,23 @@ body {
   padding: 0;
 }
 
-/* ✅ Shared logo styling */
+/* ✅ Shared logo styling (used for centered logos like login page) */
 .logo {
   display: flex;
   justify-content: center;
 }
 
 .logo img {
-  max-width: 30%;
+  max-width: 50%;
   height: auto;
   margin: 20px 0;
+}
+
+/* ✅ Navbar-specific logo styling (smaller and aligned) */
+.navbar-logo {
+  height: 32px;
+  width: auto;
+  margin-right: 1rem;
 }
 
 /* ✅ Navbar styling */
@@ -33,7 +40,7 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1.5rem; /* Reduced height */
   background-color: #ffffff;
   color: #000000;
   flex-wrap: wrap;
