@@ -30,7 +30,7 @@ body {
 
 /* ✅ Navbar-specific logo styling (smaller and aligned) */
 .navbar-logo {
-  height: 32px;
+  height: 24px;
   width: auto;
   margin-right: 1rem;
 }
@@ -40,7 +40,7 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 0.5rem 1.5rem; /* Reduced height */
+  padding: 0.5rem 1rem; /* Reduced height */
   background-color: #ffffff;
   color: #000000;
   flex-wrap: wrap;
