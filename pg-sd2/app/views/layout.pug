@@ -36,11 +36,18 @@ html
       }
   body
     nav.navbar
-      img.navbar-logo(src="/images/Roepilot-removebg-preview.png", alt="RoePilot Logo")
-      a(href="/home") Home |
-      a(href="/categories") Categories |
-      a(href="/supportrequests") Support Requests |
-      a(href="/supportrequests/new") Ask a Question |
-      a(href="/users") Users |
-      a(href="/logout") Logout
+      .nav-left
+        img.navbar-logo(src="/images/Roepilot-removebg-preview.png", alt="RoePilot Logo")
+      .nav-right
+        a(href="/home") Home
+        | 
+        a(href="/categories") Categories
+        | 
+        a(href="/supportrequests") Support Requests
+        | 
+        a(href="/supportrequests/new") Ask a Question
+        | 
+        a(href="/users") Users
+        | 
+        a(href="/logout") Logout
     block content
