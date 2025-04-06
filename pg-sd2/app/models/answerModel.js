@@ -1,10 +1,9 @@
-const db = require('../services/db');
-
-function upvoteAnswer(answerId) {
-  const sql = "UPDATE answers SET NumOfUpvote = NumOfUpvote + 1 WHERE AnswerID = ?";
+function downvoteAnswer(answerId) {
+  const sql = "UPDATE answers SET NumOfUpvote = NumOfUpvote - 1 WHERE AnswerID = ? AND NumOfUpvote > 0";
   return db.query(sql, [answerId]);
 }
 
 module.exports = {
-  upvoteAnswer
+  upvoteAnswer,
+  downvoteAnswer // 
 };
