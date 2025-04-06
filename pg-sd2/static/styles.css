@@ -16,6 +16,18 @@ body {
   padding: 0;
 }
 
+/* ✅ Shared logo styling */
+.logo {
+  display: flex;
+  justify-content: center;
+}
+
+.logo img {
+  max-width: 50%;
+  height: auto;
+  margin: 20px 0;
+}
+
 /* ✅ Navbar styling */
 .navbar {
   display: flex;
@@ -39,22 +51,14 @@ body {
   text-decoration: underline;
 }
 
-.navbar-logo {
-  height: 32px;
-  width: auto;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-  border: none;
-  box-shadow: none;
+.logout-logo {
   background: none;
-}
-
-/* ✅ Login page logo styling */
-.login-logo {
-  height: 60px;
+  box-shadow: none;
+  border: none;
+  height: 24px;
   width: auto;
-  display: block;
-  margin: 1rem auto;
+  margin-left: 0.25rem;
+  vertical-align: middle;
 }
 
 /* ✅ Post box styling */
@@ -120,16 +124,6 @@ img {
   object-fit: cover;
   vertical-align: middle;
   margin-right: 0.5rem;
-}
-
-.logout-logo {
-  background: none;
-  box-shadow: none;
-  border: none;
-  height: 24px;
-  width: auto;
-  margin-left: 0.25rem;
-  vertical-align: middle;
 }
 
 .user-grid {
