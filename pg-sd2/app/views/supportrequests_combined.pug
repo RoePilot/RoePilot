@@ -38,6 +38,8 @@ block content
                 p.small Posted on #{answer.PostDate}, Upvotes: #{answer.NumOfUpvote}
                 form(action="/answers/upvote/" + answer.AnswerID, method="post")
                   button(type="submit") Upvote
+                form(action="/answers/downvote/" + answer.AnswerID, method="post")
+                  button(type="submit") Downvote
         else
           p.no-comments No answers yet.
 
@@ -51,4 +53,4 @@ block content
     p No support requests available.
 
   script.
-    liveFilter("searchInput", "post-box");
+    liveFilter("searchInput", "post-box");
