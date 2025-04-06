@@ -10,8 +10,8 @@
 body {
   font-family: 'WinkySans', sans-serif;
   line-height: 1.6;
-  background-color: #01a16e; /* Full-page green background */
-  color: #ffffff; /* Adjust text color for contrast */
+  background-color: #01a16e;
+  color: #ffffff;
   margin: 0;
   padding: 0;
 }
@@ -19,12 +19,13 @@ body {
 /* ✅ Navbar styling */
 .navbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 1rem 2rem;
   background-color: #ffffff;
   color: #000000;
   flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .navbar a {
@@ -34,17 +35,15 @@ body {
   margin-right: 0.5rem;
 }
 
-.navbar a:last-of-type {
-  margin-right: 1rem;
-}
-
 .navbar a:hover {
   text-decoration: underline;
 }
 
-.logo {
-  height: 40px;
+.logout-logo {
+  height: 24px;
   width: auto;
+  margin-left: 0.25rem;
+  vertical-align: middle;
 }
 
 /* ✅ Post box styling */
@@ -214,12 +213,6 @@ a.back-link:hover {
   padding: 2rem;
 }
 
-.logo {
-  height: 40px;
-  width: auto;
-}
-
-/* Form styles */
 .form-container {
   width: 100%;
   max-width: 400px;
