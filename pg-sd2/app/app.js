@@ -255,7 +255,16 @@ app.post("/answers/upvote/:id", (req, res) => {
       res.status(500).send("Error upvoting answer: " + error);
     });
 });
-
+// Downvote Answer
+app.post("/answers/downvote/:id", (req, res) => {
+  answerModel.downvoteAnswer(req.params.id)
+    .then(() => {
+      res.redirect("/supportrequests");
+    })
+    .catch(error => {
+      res.status(500).send("Error downvoting answer: " + error);
+    });
+});
 // Categories
 app.get("/categories", (req, res) => {
   const sql = "SELECT * FROM categories";
