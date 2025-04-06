@@ -108,10 +108,17 @@ app.get("/users", async (req, res) => {
 
   try {
     const results = await db.query(sql, params);
-    res.render("users", { users: results, search });
+    res.render("users", {
+      users: results,
+      search,
+      sessionUser: req.session.user // ✅ pass the logged-in user to the view
+    });
   } catch (error) {
-    res.render("users", { error: "Database error: " + error });
-  }
+    res.render("users", {
+      error: "Database error: " + error,
+      sessionUser: req.session.user
+    });
+  }
 });
 
 // Support Requests View

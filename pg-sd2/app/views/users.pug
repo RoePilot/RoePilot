@@ -20,11 +20,13 @@ block content
           p Registered On: #{user.RegistrationDate}
           a.btn(href="/supportrequests?user=" + user.UserID) View Support Requests
 
-          form(method="post", action="/users/" + user.UserID + "/upload", enctype="multipart/form-data")
-            input(type="file", name="profilePic", accept="image/*", required)
-            button(type="submit") Upload Picture
+          // ✅ Show upload form only if this is the logged-in user
+          if sessionUser && user.UserID == sessionUser.id
+            form(method="post", action="/users/" + user.UserID + "/upload", enctype="multipart/form-data")
+              input(type="file", name="profilePic", accept="image/*", required)
+              button(type="submit") Upload Picture
   else
     p No users available.
 
   script.
-    liveFilter("searchInput", "user-card");
+    liveFilter("searchInput", "user-card");
