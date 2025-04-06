@@ -30,10 +30,12 @@ body {
 
 /* ✅ Navbar-specific logo styling (smaller and aligned) */
 .navbar-logo {
-  height: 16px;
+  height: 32px;
   width: auto;
-  margin-right: 1rem;
+  margin: 0;
+  padding: 0;
 }
+
 
 
 /* ✅ Navbar styling */
