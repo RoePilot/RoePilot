@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h1 Support Categories
+
+  form#searchForm(method="get", action="/categories")
+    input#searchInput(type="text", name="search", placeholder="Search categories...", value=(search || ""))
+
+  if error
+    p.error #{error}
+  else if categories && categories.length
+    .category-grid
+      each category in categories
+        .category-card
+          h2 #{category.CategoryName}
+          p #{category.Description}
+          a.btn(href="/supportrequests?category=" + category.CategoryID) View Support Requests
+  else
+    p No categories available.
+
+  script.
+    liveFilter("searchInput", "category-card");
