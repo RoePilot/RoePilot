@@ -17,8 +17,7 @@ jobs:
         run: ls -R
 
       - name: Docker Compose up
-        run: docker compose -f pg-sd2/docker-compose.yml up -d --build
+        run: docker compose --env-file pg-sd2/env.ci -f pg-sd2/docker-compose.yml up -d --build
 
       - name: Show running containers
         run: docker ps
-
