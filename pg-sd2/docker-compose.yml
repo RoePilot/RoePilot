@@ -13,7 +13,7 @@ services:
     image: mysql
     restart: always
     env_file:
-      - ./.env
+      - ./.env.ci
     ports:
       - "3308:3306"
     volumes:
