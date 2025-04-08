@@ -5,14 +5,19 @@ const { User } = require("./models/user");
 const session = require("express-session");
 const answerModel = require('./models/answerModel');
 const multer = require("multer");
+// const SQLiteStore = require("connect-sqlite3")(session); // Uncomment to use persistent session store
 
 // Middleware: form parser & sessions
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
+  // store: new SQLiteStore({ db: 'sessions.sqlite' }), // Uncomment this for persistent sessions
   secret: 'secretkeysdfjsflyoifasd',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to true if using HTTPS
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
 }));
 
 // Configure file uploads for profile pictures
@@ -371,7 +376,6 @@ app.post("/profile/edit", requireLogin, upload.single("profilePic"), async (req,
     res.status(500).send("Error updating profile: " + err);
   }
 });
-
 
 // Logout
 app.get("/logout", (req, res) => {
