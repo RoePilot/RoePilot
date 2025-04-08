@@ -18,9 +18,11 @@ block content
           p University ID: #{user.UniversityID}
           p Credibility Score: #{user.CredibilityScore}
           p Registered On: #{user.RegistrationDate}
-          a.btn(href="/supportrequests?user=" + user.UserID) View Support Requests
+          
+          // 🔗 Link to user profile
+          a.btn(href="/users/" + user.UserID) View Profile
 
-          // ✅ Show upload form only if this is the logged-in user
+          // 📸 Upload form for logged-in user's own card
           if sessionUser && user.UserID == sessionUser.id
             form(method="post", action="/users/" + user.UserID + "/upload", enctype="multipart/form-data")
               input(type="file", name="profilePic", accept="image/*", required)
@@ -29,4 +31,4 @@ block content
     p No users available.
 
   script.
-    liveFilter("searchInput", "user-card");
+    liveFilter("searchInput", "user-card");
