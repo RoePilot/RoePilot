@@ -278,7 +278,7 @@ app.post("/answers/:requestId", requireLogin, async (req, res) => {
 });
 
 // Upvote Answer
-app.post("/answers/upvote/:id", (req, res) => {
+app.post("/answers/upvote/:id", requireLogin, (req, res) => {
   const answerId = req.params.id;
   answerModel.upvoteAnswer(answerId)
     .then(() => {
@@ -290,7 +290,7 @@ app.post("/answers/upvote/:id", (req, res) => {
 });
 
 // Downvote Answer
-app.post("/answers/downvote/:id", (req, res) => {
+app.post("/answers/downvote/:id", requireLogin, (req, res) => {
   answerModel.downvoteAnswer(req.params.id)
     .then(() => {
       res.redirect("/supportrequests");
