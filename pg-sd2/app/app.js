@@ -370,7 +370,7 @@ app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
 
   try {
     await db.query("UPDATE users SET ProfilePic = ? WHERE UserID = ?", [fileName, userId]);
-    res.redirect("/users");
+    res.redirect("/profile");
   } catch (error) {
     res.status(500).send("Error uploading profile picture: " + error);
   }

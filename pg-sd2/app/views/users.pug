@@ -21,12 +21,6 @@ block content
           
           // 🔗 Link to user profile
           a.btn(href="/users/" + user.UserID) View Profile
-
-          // 📸 Upload form for logged-in user's own card
-          if sessionUser && user.UserID == sessionUser.id
-            form(method="post", action="/users/" + user.UserID + "/upload", enctype="multipart/form-data")
-              input(type="file", name="profilePic", accept="image/*", required)
-              button(type="submit") Upload Picture
   else
     p No users available.
 
