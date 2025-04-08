@@ -2,19 +2,20 @@ extends layout
 
 block content
   .center-content
-    h1= isSelf ? "My Profile" : `${profileUser.Username}'s Profile`
-    
-    if isSelf
-      a.btn(href="/profile/edit") Edit Profile
+    .user-card
+      if profileUser.ProfilePic
+        img.profile-img(src=`/images/${profileUser.ProfilePic}`, alt="Profile Picture")
+      else
+        img.profile-img(src="/images/default-avatar.png", alt="Default Picture")
 
-    if profileUser.ProfilePic
-      img.profile-img(src=`/images/${profileUser.ProfilePic}`, alt="Profile Picture")
-    else
-      img.profile-img(src="/images/default-avatar.png", alt="Default Picture")
+      h2= isSelf ? "My Profile" : `${profileUser.Username}'s Profile`
+      p Email: #{profileUser.Email}
+      p University ID: #{profileUser.UniversityID}
+      p Credibility Score: #{profileUser.CredibilityScore || 0}
+      p Registered On: #{profileUser.RegistrationDate}
 
-    p Email: #{profileUser.Email}
-    p University ID: #{profileUser.UniversityID}
-    p Credibility Score: #{profileUser.CredibilityScore || 0}
+      if isSelf
+        a.btn(href="/profile/edit") Edit Profile
 
     hr
 
@@ -26,7 +27,7 @@ block content
           p= req.Description
           p.small Posted on #{req.PostDate}
     else
-      p This user hasn't made any support requests yet.
+      p This user hasn’t made any support requests yet.
 
     hr
 
@@ -38,4 +39,4 @@ block content
           p= ans.AnswerText
           p.small Posted on #{ans.PostDate}
     else
-      p This user hasn't posted any answers yet.
+      p No answers yet.
