@@ -8,7 +8,7 @@ block content
         if profileUser.ProfilePic
           img.profile-img(src="/images/#{profileUser.ProfilePic}", alt="Profile Picture")
         else
-          img.profile-img(src="/images/default-avatar.png", alt="Default Picture")
+          img.profile-img(src='/images/default-avatar.png', alt="Default Picture")
 
       h2= isSelf ? "My Profile" : `${profileUser.Username}'s Profile`
       p Email: #{profileUser.Email}
