@@ -111,28 +111,36 @@ app.get("/users", async (req, res) => {
     res.render("users", {
       users: results,
       search,
-      sessionUser: req.session.user // ✅ pass the logged-in user to the view
+      sessionUser: req.session.user
     });
   } catch (error) {
     res.render("users", {
       error: "Database error: " + error,
       sessionUser: req.session.user
-    });
-  }
+    });
+  }
 });
 
+// View another user's profile
 app.get("/users/:id", async (req, res) => {
   const userId = req.params.id;
 
   try {
     const userResult = await db.query("SELECT * FROM users WHERE UserID = ?", [userId]);
     const requests = await db.query("SELECT * FROM supportrequests WHERE UserID = ?", [userId]);
+    const answers = await db.query(`
+      SELECT a.*, s.Title AS RequestTitle
+      FROM answers a
+      JOIN supportrequests s ON a.RequestID = s.RequestID
+      WHERE a.UserID = ?
+    `, [userId]);
 
     if (userResult.length === 0) return res.status(404).send("User not found");
 
     res.render("profile", {
       profileUser: userResult[0],
       supportRequests: requests,
+      userAnswers: answers,
       isSelf: req.session.user?.id == userId,
       user: req.session.user
     });
@@ -140,7 +148,6 @@ app.get("/users/:id", async (req, res) => {
     res.status(500).send("Error loading profile: " + error);
   }
 });
-
 
 // Support Requests View
 app.get("/supportrequests", async (req, res) => {
@@ -276,6 +283,7 @@ app.post("/answers/upvote/:id", (req, res) => {
       res.status(500).send("Error upvoting answer: " + error);
     });
 });
+
 // Downvote Answer
 app.post("/answers/downvote/:id", (req, res) => {
   answerModel.downvoteAnswer(req.params.id)
@@ -284,12 +292,12 @@ app.post("/answers/downvote/:id", (req, res) => {
     })
     .catch(error => {
       res.status(500).send("Error downvoting answer: " + error);
-    });
+    });
 });
+
 // Categories
 app.get("/categories", (req, res) => {
-  const sql = "SELECT * FROM categories";
-  db.query(sql)
+  db.query("SELECT * FROM categories")
     .then(results => {
       res.render("categories", { categories: results });
     })
@@ -298,16 +306,24 @@ app.get("/categories", (req, res) => {
     });
 });
 
+// My Profile View
 app.get("/profile", requireLogin, async (req, res) => {
   const userId = req.session.user.id;
 
   try {
     const userResult = await db.query("SELECT * FROM users WHERE UserID = ?", [userId]);
     const requests = await db.query("SELECT * FROM supportrequests WHERE UserID = ?", [userId]);
+    const answers = await db.query(`
+      SELECT a.*, s.Title AS RequestTitle
+      FROM answers a
+      JOIN supportrequests s ON a.RequestID = s.RequestID
+      WHERE a.UserID = ?
+    `, [userId]);
 
     res.render("profile", {
       profileUser: userResult[0],
       supportRequests: requests,
+      userAnswers: answers,
       isSelf: true,
       user: req.session.user
     });
@@ -316,6 +332,7 @@ app.get("/profile", requireLogin, async (req, res) => {
   }
 });
 
+// Edit Profile Form
 app.get("/profile/edit", requireLogin, async (req, res) => {
   const userId = req.session.user.id;
   try {
@@ -329,6 +346,7 @@ app.get("/profile/edit", requireLogin, async (req, res) => {
   }
 });
 
+// Edit Profile Submit
 app.post("/profile/edit", requireLogin, async (req, res) => {
   const { email, universityId } = req.body;
   const userId = req.session.user.id;
@@ -345,15 +363,13 @@ app.post("/profile/edit", requireLogin, async (req, res) => {
   }
 });
 
-
 // Profile Picture Upload
 app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
   const userId = req.params.id;
   const fileName = req.file.filename;
 
   try {
-    const sql = "UPDATE users SET ProfilePic = ? WHERE UserID = ?";
-    await db.query(sql, [fileName, userId]);
+    await db.query("UPDATE users SET ProfilePic = ? WHERE UserID = ?", [fileName, userId]);
     res.redirect("/users");
   } catch (error) {
     res.status(500).send("Error uploading profile picture: " + error);
