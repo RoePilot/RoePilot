@@ -10,8 +10,11 @@ block content
   else
     h1 Support Requests
 
-  form#searchForm(method="get", action="/supportrequests")
-    input#searchInput(type="text", name="search", placeholder="Search support requests...", value=(search || ""))
+  //- Centered and card-style search form
+  .search-container(style="display: flex; justify-content: center; margin-bottom: 20px;")
+    .search-card(style="background: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 100%; max-width: 600px;")
+      form#searchForm(method="get", action="/supportrequests", style="display: flex; gap: 10px;")
+        input#searchInput(type="text", name="search", placeholder="Search support requests...", value=(search || ""), style="flex: 1; padding: 10px; border-radius: 4px; border: 1px solid #ccc;")
 
   if filterUserName || pageTitle
     a.back-link(href="/supportrequests") ← Back to All Support Requests
@@ -53,4 +56,4 @@ block content
     p No support requests available.
 
   script.
-    liveFilter("searchInput", "post-box");
+    liveFilter("searchInput", "post-box");
