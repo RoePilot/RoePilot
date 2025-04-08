@@ -10,12 +10,6 @@ block content
         else
           img.profile-img(src="/images/default-avatar.png", alt="Default Picture")
 
-        // 📤 Profile Picture Upload Form for Logged-in User
-        if isSelf
-          form(method="POST", action=`/users/${profileUser.UserID}/upload`, enctype="multipart/form-data")
-            input(type="file", name="profilePic", accept="image/*", required)
-            button(type="submit") Change Profile Picture
-
       h2= isSelf ? "My Profile" : `${profileUser.Username}'s Profile`
       p Email: #{profileUser.Email}
       p University ID: #{profileUser.UniversityID}

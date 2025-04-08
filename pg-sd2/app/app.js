@@ -347,34 +347,31 @@ app.get("/profile/edit", requireLogin, async (req, res) => {
 });
 
 // Edit Profile Submit
-app.post("/profile/edit", requireLogin, async (req, res) => {
+app.post("/profile/edit", requireLogin, upload.single("profilePic"), async (req, res) => {
   const { email, universityId } = req.body;
   const userId = req.session.user.id;
+  const profilePic = req.file?.filename;
 
   try {
-    await db.query("UPDATE users SET Email = ?, UniversityID = ? WHERE UserID = ?", [
-      email,
-      universityId,
-      userId
-    ]);
+    const updateFields = ["Email = ?", "UniversityID = ?"];
+    const values = [email, universityId];
+
+    if (profilePic) {
+      updateFields.push("ProfilePic = ?");
+      values.push(profilePic);
+    }
+
+    values.push(userId);
+
+    const sql = `UPDATE users SET ${updateFields.join(", ")} WHERE UserID = ?`;
+    await db.query(sql, values);
+
     res.redirect("/profile");
   } catch (err) {
     res.status(500).send("Error updating profile: " + err);
   }
 });
 
-// Profile Picture Upload
-app.post("/users/:id/upload", upload.single("profilePic"), async (req, res) => {
-  const userId = req.params.id;
-  const fileName = req.file.filename;
-
-  try {
-    await db.query("UPDATE users SET ProfilePic = ? WHERE UserID = ?", [fileName, userId]);
-    res.redirect("/profile");
-  } catch (error) {
-    res.status(500).send("Error uploading profile picture: " + error);
-  }
-});
 
 // Logout
 app.get("/logout", (req, res) => {
